@@ -262,13 +262,23 @@ describe('DiscoverCardComponent', () => {
       expect(comp.getMediaServer()).toBeNull();
     });
 
-    it('only offers playback when the title is available', () => {
+    it('offers playback whenever the media server has the title', () => {
       const { comp } = createComponent();
-      comp.result = makeResult({ available: false, plexUrl: 'https://plex/x' });
+      comp.result = makeResult({ available: false });
       expect(comp.getPlayTarget()).toBeNull();
 
-      comp.result = makeResult({ available: true, plexUrl: 'https://plex/x' });
+      // The API sets the URL only when the title is in the library, even if `available` is false
+      // (e.g. Radarr takes priority for availability, or only a 4K copy exists).
+      comp.result = makeResult({ available: false, plexUrl: 'https://plex/x' });
       expect(comp.getPlayTarget()?.url).toBe('https://plex/x');
+      expect(comp.getStatusClass()).toBe('available');
+    });
+
+    it('labels the badge "On Plex" from the link alone', () => {
+      const { comp, mockTranslate } = createComponent();
+      comp.result = makeResult({ available: false, plexUrl: 'https://plex/x' });
+      comp.getAvailabilityStatus();
+      expect(mockTranslate.instant).toHaveBeenCalledWith('Discovery.Card.OnServer', { server: 'Plex' });
     });
 
     it('labels the badge with the server name', () => {

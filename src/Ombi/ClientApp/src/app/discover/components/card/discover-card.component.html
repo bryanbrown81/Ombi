@@ -24,7 +24,7 @@
 
         <!-- Status badge (becomes the media server's badge when the title is in its library) -->
         <ng-container *ngIf="getStatusClass() as statusClass">
-            @let server = result.available ? getMediaServer() : null;
+            @let server = getMediaServer();
             <div class="status-badge {{statusClass}}" [class.status-badge--server]="!!server" [attr.data-server]="server?.key"
                 id="status{{result.id}}">
                 @if (server?.key === 'plex') {
@@ -58,8 +58,8 @@
             </div>
         }
 
-        <!-- Request button -->
-        <div class="card-actions" *ngIf="!result.available && !result.approved && !result.requested">
+        <!-- Request button (not needed when it can already be played from the media server) -->
+        <div class="card-actions" *ngIf="!result.available && !result.approved && !result.requested && !getPlayTarget()">
             <div *ngIf="is4kEnabled && requestable && result.type === RequestType.movie;then show4K else regular"></div>
             <ng-template #show4K>
                 <button type="button" [matMenuTriggerFor]="menu" id="requestButton{{result.id}}{{result.type}}{{discoverType}}" class="request-btn" [class.is-loading]="loading">

@@ -1,5 +1,6 @@
 <!-- Shared copy block: re-mounted per slide so its entrance animation replays -->
 <ng-template #copy let-item>
+    @let server = serverFor(item);
     <div class="hero-eyebrow">
         <span class="hero-eyebrow-mark" aria-hidden="true"></span>
         {{ 'Discovery.NowPlaying' | translate }}
@@ -15,10 +16,36 @@
             </span>
         }
         <span class="hero-type">{{ 'Common.movie' | translate }}</span>
+        @if (server) {
+            <span class="hero-status hero-status--server" [attr.data-server]="server.key">
+                @if (server.key === 'plex') {
+                    <svg class="hero-server-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 2.5h6l7 9.5-7 9.5h-6l7-9.5z" /></svg>
+                } @else {
+                    <i class="fas fa-circle-play" aria-hidden="true"></i>
+                }
+                {{ 'Discovery.Card.OnServer' | translate: { server: server.name } }}
+            </span>
+        } @else if (item.available) {
+            <span class="hero-status hero-status--available">{{ 'Common.Available' | translate }}</span>
+        } @else if (item.approved) {
+            <span class="hero-status hero-status--requested">{{ 'Common.Approved' | translate }}</span>
+        } @else if (item.requested) {
+            <span class="hero-status hero-status--requested">{{ 'Common.Requested' | translate }}</span>
+        }
     </div>
     <p class="hero-overview">{{ item.overview }}</p>
     <div class="hero-actions">
-        <a [routerLink]="getDetailsLink()" class="hero-cta">
+        @if (server) {
+            <a class="hero-cta hero-cta--play" [attr.data-server]="server.key" [href]="server.url" target="_blank" rel="noopener noreferrer">
+                @if (server.key === 'plex') {
+                    <svg class="hero-server-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 2.5h6l7 9.5-7 9.5h-6l7-9.5z" /></svg>
+                } @else {
+                    <i class="fas fa-play" aria-hidden="true"></i>
+                }
+                {{ server.playKey | translate }}
+            </a>
+        }
+        <a [routerLink]="getDetailsLink()" class="hero-cta" [class.hero-cta--secondary]="!!server">
             <i class="fas fa-circle-info" aria-hidden="true"></i>
             {{ 'Discovery.ViewDetails' | translate }}
         </a>

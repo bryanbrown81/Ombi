@@ -310,6 +310,22 @@ describe('HeroBannerComponent', () => {
     });
   });
 
+  describe('media server availability', () => {
+    it('carries availability and server links onto each slide', async () => {
+      mockSearchService.nowPlayingMoviesByPage.mockResolvedValue([
+        makeMovie({ id: 1, backdropPath: '/one.jpg', available: true, plexUrl: 'https://plex/one' } as any),
+        makeMovie({ id: 2, backdropPath: '/two.jpg', requested: true }),
+      ]);
+      await component.ngOnInit();
+
+      const [onPlex, requested] = component.items();
+      expect(onPlex.available).toBe(true);
+      expect(component.serverFor(onPlex)).toMatchObject({ key: 'plex', url: 'https://plex/one', playKey: 'Search.ViewOnPlex' });
+      expect(requested.requested).toBe(true);
+      expect(component.serverFor(requested)).toBeNull();
+    });
+  });
+
   describe('ambient backdrop', () => {
     it('tints the ambient with the active slide and follows selection', async () => {
       mockSearchService.nowPlayingMoviesByPage.mockResolvedValue([

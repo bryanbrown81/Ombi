@@ -1,0 +1,98 @@
+// ─── Availability: status chip and "Play on …" ───────────
+.stage-panel {
+    .hero-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 26px;
+        padding: 0 11px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 0.76rem;
+        font-weight: 650;
+    }
+
+    // The meta row draws dot separators as ::before; the chip stands apart on its own.
+    .hero-meta > .hero-status::before {
+        content: none;
+    }
+
+    .hero-status--server {
+        --server: var(--au-plex);
+        border-color: color-mix(in srgb, var(--server) 60%, transparent);
+        background: linear-gradient(160deg, color-mix(in srgb, var(--server) 34%, transparent), rgba(255, 255, 255, 0.04));
+        box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--server) 80%, transparent);
+
+        i {
+            color: var(--server);
+        }
+    }
+
+    .hero-status--available {
+        border-color: rgba(29, 233, 182, 0.45);
+        background: rgba(29, 233, 182, 0.16);
+    }
+
+    .hero-status--requested {
+        border-color: rgba(255, 152, 0, 0.45);
+        background: rgba(255, 152, 0, 0.16);
+    }
+
+    [data-server="emby"] {
+        --server: var(--au-emby);
+    }
+
+    [data-server="jellyfin"] {
+        --server: var(--au-jellyfin);
+    }
+
+    .hero-server-mark {
+        width: 12px;
+        height: 12px;
+        fill: var(--server, var(--au-plex));
+        filter: drop-shadow(0 0 4px color-mix(in srgb, var(--server, var(--au-plex)) 80%, transparent));
+    }
+
+    .hero-cta--play {
+        --server: var(--au-plex);
+        background: linear-gradient(120deg, color-mix(in srgb, var(--server) 90%, #fff), var(--server));
+        color: #14100a;
+        text-shadow: none;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.45),
+            0 18px 40px -16px color-mix(in srgb, var(--server) 85%, transparent);
+
+        .hero-server-mark {
+            fill: currentColor;
+            filter: none;
+        }
+
+        &:hover {
+            color: #14100a;
+            filter: brightness(1.08);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.55),
+                0 22px 46px -16px color-mix(in srgb, var(--server) 90%, transparent);
+        }
+
+        &[data-server="emby"],
+        &[data-server="jellyfin"] {
+            color: #fff;
+        }
+    }
+
+    .hero-cta--secondary {
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06));
+        color: #fff;
+        text-shadow: none;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+
+        &:hover {
+            color: #fff;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.1));
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+        }
+    }
+}

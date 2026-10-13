@@ -7,6 +7,7 @@ import { SearchV2Service } from "../../../services";
 import { RequestType } from "../../../interfaces";
 import { TiltDirective } from "../../directives/tilt.directive";
 import { AmbientService } from "../../../shared/ambient/ambient.service";
+import { IMediaServerLink, getMediaServerLink } from "../../media-server";
 import { prefersReducedMotion } from "../../directives/reveal.directive";
 
 export interface IHeroBannerItem {
@@ -18,6 +19,12 @@ export interface IHeroBannerItem {
     rating: number;
     type: RequestType;
     year: string;
+    available?: boolean;
+    approved?: boolean;
+    requested?: boolean;
+    plexUrl?: string;
+    embyUrl?: string;
+    jellyfinUrl?: string;
 }
 
 export const HERO_ROTATION_MS = 8000;
@@ -28,7 +35,7 @@ const SWIPE_THRESHOLD_PX = 48;
     standalone: true,
     selector: "discover-hero-banner",
     templateUrl: "./hero-banner.component.html",
-    styleUrls: ["./hero-banner.component.scss", "./hero-banner.stage.scss"],
+    styleUrls: ["./hero-banner.component.scss", "./hero-banner.stage.scss", "./hero-banner.availability.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
@@ -93,7 +100,13 @@ export class HeroBannerComponent implements OnInit, OnDestroy {
                     posterPath: m.posterPath,
                     rating: m.voteAverage,
                     type: RequestType.movie,
-                    year: m.releaseDate ? new Date(m.releaseDate).getFullYear().toString() : ''
+                    year: m.releaseDate ? new Date(m.releaseDate).getFullYear().toString() : '',
+                    available: m.available,
+                    approved: m.approved,
+                    requested: m.requested,
+                    plexUrl: m.plexUrl,
+                    embyUrl: m.embyUrl,
+                    jellyfinUrl: m.jellyfinUrl
                 }));
 
             this.items.set(bannerItems);
@@ -230,6 +243,11 @@ export class HeroBannerComponent implements OnInit, OnDestroy {
 
     public posterFor(item: IHeroBannerItem): string {
         return item?.posterPath ? `${TMDB_IMAGE}/w500${item.posterPath}` : '';
+    }
+
+    /** The media server holding this slide's title, if any (Plex, then Emby, then Jellyfin). */
+    public serverFor(item: IHeroBannerItem): IMediaServerLink | null {
+        return getMediaServerLink(item);
     }
 
     public getDetailsLink(): string {

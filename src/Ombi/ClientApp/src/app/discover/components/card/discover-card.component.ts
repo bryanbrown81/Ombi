@@ -18,16 +18,9 @@ import { IMovieRequestModel, RequestType } from "../../../interfaces";
 import { TranslateService } from "@ngx-translate/core";
 import { ImageComponent } from "../../../components";
 import { TiltDirective } from "../../directives/tilt.directive";
+import { IMediaServerLink, getMediaServerLink } from "../../media-server";
 
-export type MediaServerKey = "plex" | "emby" | "jellyfin";
-
-export interface IMediaServerLink {
-    key: MediaServerKey;
-    name: string;
-    url: string;
-    /** Translation key for the "Play on …" action. */
-    playKey: string;
-}
+export { IMediaServerLink, MediaServerKey } from "../../media-server";
 
 @Component({
     standalone: true,
@@ -121,7 +114,7 @@ export class DiscoverCardComponent implements OnInit {
     }
 
     public getStatusClass(): string {
-        if (this.result.available) {
+        if (this.result.available || this.getMediaServer()) {
             return "available";
         }
         if (this.tvSearchResult?.partlyAvailable) {
@@ -141,22 +134,15 @@ export class DiscoverCardComponent implements OnInit {
 
     /** The media server holding this title, preferring Plex, then Emby, then Jellyfin. */
     public getMediaServer(): IMediaServerLink | null {
-        const r = this.result;
-        if (r?.plexUrl) {
-            return { key: "plex", name: "Plex", url: r.plexUrl, playKey: "Search.ViewOnPlex" };
-        }
-        if (r?.embyUrl) {
-            return { key: "emby", name: "Emby", url: r.embyUrl, playKey: "Search.ViewOnEmby" };
-        }
-        if (r?.jellyfinUrl) {
-            return { key: "jellyfin", name: "Jellyfin", url: r.jellyfinUrl, playKey: "Search.ViewOnJellyfin" };
-        }
-        return null;
+        return getMediaServerLink(this.result);
     }
 
-    /** The server to play from, when the title is (at least partly) available on one. */
+    /**
+     * The server to play from. A server link alone is enough: the API only sets it when the
+     * title is in that library, even if `available` is false (Radarr/Sonarr priority, 4K-only).
+     */
     public getPlayTarget(): IMediaServerLink | null {
-        return this.result?.available ? this.getMediaServer() : null;
+        return this.getMediaServer();
     }
 
     public isPartlyAvailable(): boolean {
@@ -164,8 +150,8 @@ export class DiscoverCardComponent implements OnInit {
     }
 
     public getAvailabilityStatus(): string {
-        if (this.result.available) {
-            const server = this.getMediaServer();
+        const server = this.getMediaServer();
+        if (this.result.available || server) {
             if (server) {
                 return this.translate.instant(this.isPartlyAvailable() ? "Discovery.Card.PartlyOnServer" : "Discovery.Card.OnServer", { server: server.name });
             }
