@@ -1,6 +1,6 @@
 
 <div id="result{{result.id}}" *ngIf="fullyLoaded" class="card-wrapper" [style.display]="hide ? 'none' : 'block'">
-    <div class="card-inner" ombiTilt="aurora" [class.has-actions]="!result.available && !result.approved && !result.requested && requestable">
+    <div class="card-inner" ombiTilt [class.has-actions]="(!result.available && !result.approved && !result.requested && requestable) || !!getPlayTarget()">
         <!-- Single link wrapping poster and overlay -->
         <a [routerLink]="generateDetailsLink()" class="card-poster-link" [attr.aria-label]="result.title">
             <div class="card-media" [class.is-loaded]="posterLoaded">
@@ -22,10 +22,18 @@
 
         <span class="card-glare" aria-hidden="true"></span>
 
-        <!-- Status badge -->
+        <!-- Status badge (becomes the media server's badge when the title is in its library) -->
         <ng-container *ngIf="getStatusClass() as statusClass">
-            <div class="status-badge {{statusClass}}" id="status{{result.id}}">
-                <span class="status-dot"></span>
+            @let server = result.available ? getMediaServer() : null;
+            <div class="status-badge {{statusClass}}" [class.status-badge--server]="!!server" [attr.data-server]="server?.key"
+                id="status{{result.id}}">
+                @if (server?.key === 'plex') {
+                    <svg class="server-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 2.5h6l7 9.5-7 9.5h-6l7-9.5z" /></svg>
+                } @else if (server) {
+                    <i class="fas fa-circle-play server-mark" aria-hidden="true"></i>
+                } @else {
+                    <span class="status-dot"></span>
+                }
                 <span class="status-label" id="availabilityStatus{{result.id}}">{{getAvailabilityStatus()}}</span>
             </div>
         </ng-container>
@@ -34,6 +42,21 @@
         <div class="type-badge" id="type{{result.id}}-{{RequestType[result.type]}}">
             {{ 'Common.' + RequestType[result.type] | translate }}
         </div>
+
+        <!-- Play straight from the media server -->
+        @if (getPlayTarget(); as target) {
+            <div class="card-actions">
+                <a class="play-btn play-btn--{{target.key}}" id="playButton{{result.id}}{{result.type}}"
+                    [href]="target.url" target="_blank" rel="noopener noreferrer">
+                    @if (target.key === 'plex') {
+                        <svg class="server-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 2.5h6l7 9.5-7 9.5h-6l7-9.5z" /></svg>
+                    } @else {
+                        <i class="fas fa-play" aria-hidden="true"></i>
+                    }
+                    <span>{{ target.playKey | translate }}</span>
+                </a>
+            </div>
+        }
 
         <!-- Request button -->
         <div class="card-actions" *ngIf="!result.available && !result.approved && !result.requested">
@@ -58,17 +81,5 @@
                 </button>
             </ng-template>
         </div>
-    </div>
-
-    <!-- Caption under the poster (Editorial design only); the link above carries the accessible name. -->
-    <div class="card-caption" aria-hidden="true">
-        <span class="caption-title">{{ result.title }}</span>
-        <span class="caption-meta">
-            {{ 'Common.' + RequestType[result.type] | translate }}
-            @if (result.rating > 0) {
-                <span class="caption-sep">·</span>
-                <i class="fas fa-star" aria-hidden="true"></i> {{ result.rating | number: '1.1-1' }}
-            }
-        </span>
     </div>
 </div>

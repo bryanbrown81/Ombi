@@ -1,42 +1,27 @@
 <!-- Skeleton shown until a deferred rail scrolls near the viewport -->
-<ng-template #railPlaceholder let-title let-index="index">
-    <header class="dx-section-head">
-        @if (index) {
-            <span class="dx-section-index">{{ index }}</span>
-        }
-        <h2 class="dx-section-title">{{ title }}</h2>
-        <span class="dx-section-rule" aria-hidden="true"></span>
+<ng-template #railPlaceholder let-title>
+    <header class="au-section-head">
+        <h2 class="au-section-title">{{ title }}</h2>
     </header>
-    <div class="dx-skeleton-row" aria-hidden="true">
+    <div class="au-skeleton-row" aria-hidden="true">
         @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track item) {
-            <div class="dx-skeleton dx-skeleton-poster"></div>
+            <div class="au-skeleton au-skeleton-poster"></div>
         }
     </div>
 </ng-template>
 
-<div class="discover-page" [attr.data-design]="design()">
-    @switch (design()) {
-        @case ('editorial') {
-            <discover-spotlight [featureIndex]="sectionIndex('featured')"></discover-spotlight>
-        }
-        @case ('aurora') {
-            <discover-hero-banner variant="aurora"></discover-hero-banner>
-        }
-        @default {
-            <discover-hero-banner variant="cinema"></discover-hero-banner>
-        }
-    }
+<div class="discover-page">
+    <discover-hero-banner></discover-hero-banner>
 
     <div class="discover-content">
         <section class="discover-section genre-section" ombiReveal>
-            <genre-button-select [index]="sectionIndex('genres')"></genre-button-select>
+            <genre-button-select></genre-button-select>
         </section>
 
         <section class="discover-section" [class.is-collapsed]="!hasRecentRequests()" ombiReveal>
             <ombi-recently-list
                 [id]="'recentlyRequested'"
                 [title]="'Discovery.RecentlyRequestedTab' | translate"
-                [index]="sectionIndex('recent')"
                 (hasItems)="hasRecentRequests.set($event)">
             </ombi-recently-list>
         </section>
@@ -47,7 +32,6 @@
                 <carousel-list
                     [id]="'seasonal'"
                     [title]="'Discovery.SeasonalTab' | translate"
-                    [index]="sectionIndex('seasonal')"
                     [isAdmin]="isAdmin()"
                     [discoverType]="DiscoverType.Seasonal"
                     (movieCount)="setSeasonalMovieCount($event)"
@@ -59,42 +43,38 @@
 
         @defer (on viewport; prefetch on idle) {
             <section class="discover-section" ombiReveal>
-                <carousel-list [id]="'popular'" [title]="'Discovery.PopularTab' | translate" [index]="sectionIndex('popular')"
+                <carousel-list [id]="'popular'" [title]="'Discovery.PopularTab' | translate"
                     [isAdmin]="isAdmin()" [discoverType]="DiscoverType.Popular"></carousel-list>
             </section>
         } @placeholder (minimum 300ms) {
             <section class="discover-section">
                 <ng-container [ngTemplateOutlet]="railPlaceholder"
-                    [ngTemplateOutletContext]="{ $implicit: 'Discovery.PopularTab' | translate, index: sectionIndex('popular') }"></ng-container>
+                    [ngTemplateOutletContext]="{ $implicit: 'Discovery.PopularTab' | translate }"></ng-container>
             </section>
         }
 
         @defer (on viewport; prefetch on idle) {
             <section class="discover-section" ombiReveal>
-                <carousel-list [id]="'trending'" [title]="'Discovery.TrendingTab' | translate" [index]="sectionIndex('trending')"
+                <carousel-list [id]="'trending'" [title]="'Discovery.TrendingTab' | translate"
                     [isAdmin]="isAdmin()" [discoverType]="DiscoverType.Trending"></carousel-list>
             </section>
         } @placeholder (minimum 300ms) {
             <section class="discover-section">
                 <ng-container [ngTemplateOutlet]="railPlaceholder"
-                    [ngTemplateOutletContext]="{ $implicit: 'Discovery.TrendingTab' | translate, index: sectionIndex('trending') }"></ng-container>
+                    [ngTemplateOutletContext]="{ $implicit: 'Discovery.TrendingTab' | translate }"></ng-container>
             </section>
         }
 
         @defer (on viewport; prefetch on idle) {
             <section class="discover-section" ombiReveal>
-                <carousel-list [id]="'upcoming'" [title]="'Discovery.UpcomingTab' | translate" [index]="sectionIndex('upcoming')"
+                <carousel-list [id]="'upcoming'" [title]="'Discovery.UpcomingTab' | translate"
                     [isAdmin]="isAdmin()" [discoverType]="DiscoverType.Upcoming"></carousel-list>
             </section>
         } @placeholder (minimum 300ms) {
             <section class="discover-section">
                 <ng-container [ngTemplateOutlet]="railPlaceholder"
-                    [ngTemplateOutletContext]="{ $implicit: 'Discovery.UpcomingTab' | translate, index: sectionIndex('upcoming') }"></ng-container>
+                    [ngTemplateOutletContext]="{ $implicit: 'Discovery.UpcomingTab' | translate }"></ng-container>
             </section>
         }
     </div>
-
-    @if (showDesignSwitcher()) {
-        <discover-design-switcher></discover-design-switcher>
-    }
 </div>

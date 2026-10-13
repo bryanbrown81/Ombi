@@ -1,26 +1,22 @@
-<header class="dx-section-head">
-    @if (index()) {
-        <span class="dx-section-index">{{ index() }}</span>
-    }
-    <h2 class="dx-section-title" [id]="id() + '-title'">{{ title() }}</h2>
-    <span class="dx-section-rule" aria-hidden="true"></span>
+<header class="au-section-head">
+    <h2 class="au-section-title" [id]="id() + '-title'">{{ title() }}</h2>
     @if (discoverType() !== DiscoverType.Seasonal) {
-        <div class="dx-section-actions">
-            <div class="dx-seg filter-toggle-group" role="group" [attr.aria-labelledby]="id() + '-title'"
+        <div class="au-section-actions">
+            <div class="au-seg filter-toggle-group" role="group" [attr.aria-labelledby]="id() + '-title'"
                 [style.--seg-count]="3" [style.--seg-index]="optionIndex()">
-                <span class="dx-seg__indicator" aria-hidden="true"></span>
-                <span class="dx-seg__cell" [class.filter-active]="discoverOptions() === DiscoverOption.Combined">
-                    <button type="button" class="dx-seg__btn" [id]="id() + 'Combined-button'"
+                <span class="au-seg__indicator" aria-hidden="true"></span>
+                <span class="au-seg__cell" [class.filter-active]="discoverOptions() === DiscoverOption.Combined">
+                    <button type="button" class="au-seg__btn" [id]="id() + 'Combined-button'"
                         [attr.aria-pressed]="discoverOptions() === DiscoverOption.Combined"
                         (click)="selectOption(DiscoverOption.Combined)">{{ 'Discovery.Combined' | translate }}</button>
                 </span>
-                <span class="dx-seg__cell" [class.filter-active]="discoverOptions() === DiscoverOption.Movie">
-                    <button type="button" class="dx-seg__btn" [id]="id() + 'Movie-button'"
+                <span class="au-seg__cell" [class.filter-active]="discoverOptions() === DiscoverOption.Movie">
+                    <button type="button" class="au-seg__btn" [id]="id() + 'Movie-button'"
                         [attr.aria-pressed]="discoverOptions() === DiscoverOption.Movie"
                         (click)="selectOption(DiscoverOption.Movie)">{{ 'Discovery.Movies' | translate }}</button>
                 </span>
-                <span class="dx-seg__cell" [class.filter-active]="discoverOptions() === DiscoverOption.Tv">
-                    <button type="button" class="dx-seg__btn" [id]="id() + 'Tv-button'"
+                <span class="au-seg__cell" [class.filter-active]="discoverOptions() === DiscoverOption.Tv">
+                    <button type="button" class="au-seg__btn" [id]="id() + 'Tv-button'"
                         [attr.aria-pressed]="discoverOptions() === DiscoverOption.Tv"
                         (click)="selectOption(DiscoverOption.Tv)">{{ 'Discovery.Tv' | translate }}</button>
                 </span>
@@ -39,15 +35,15 @@
         @if (loadingMore()) {
             @for (item of [1, 2, 3]; track item) {
                 <div class="ombi-rail__item rail-loading-item" aria-hidden="true">
-                    <div class="dx-skeleton dx-skeleton-poster"></div>
+                    <div class="au-skeleton au-skeleton-poster"></div>
                 </div>
             }
         }
     </ombi-media-rail>
 } @else {
-    <div class="dx-skeleton-row" aria-hidden="true">
+    <div class="au-skeleton-row" aria-hidden="true">
         @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track item) {
-            <div class="dx-skeleton dx-skeleton-poster" [style.animation-delay.ms]="item * 80"></div>
+            <div class="au-skeleton au-skeleton-poster" [style.animation-delay.ms]="item * 80"></div>
         }
     </div>
 }

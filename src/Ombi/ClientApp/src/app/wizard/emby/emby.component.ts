@@ -6,6 +6,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { TranslateModule } from "@ngx-translate/core";
 
 import { EmbyService } from "../../services";
@@ -26,6 +27,7 @@ import { NotificationService } from "../../services";
         MatInputModule,
         MatCardModule,
         MatIconModule,
+        MatSlideToggleModule,
         TranslateModule
     ]
 })

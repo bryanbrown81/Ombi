@@ -15,8 +15,6 @@ import { DetailedCardComponent } from "app/components";
 import { GenreButtonSelectComponent } from "./genre/genre-button-select.component";
 import { HeroBannerComponent } from "./hero-banner/hero-banner.component";
 import { MediaRailComponent } from "./media-rail/media-rail.component";
-import { SpotlightComponent } from "./spotlight/spotlight.component";
-import { DesignSwitcherComponent } from "./design-switcher/design-switcher.component";
 
 export const components: any[] = [
     DiscoverComponent,
@@ -29,9 +27,7 @@ export const components: any[] = [
     DetailedCardComponent,
     GenreButtonSelectComponent,
     HeroBannerComponent,
-    MediaRailComponent,
-    SpotlightComponent,
-    DesignSwitcherComponent
+    MediaRailComponent
 ];
 
 export const providers: any[] = [

@@ -16,6 +16,10 @@ export interface IDiscoverCardResult {
     background: string|any;
 
     tvMovieDb?: boolean;
+    /** Deep links into the media server when the title is in the library. */
+    plexUrl?: string;
+    embyUrl?: string;
+    jellyfinUrl?: string;
 }
 
 export enum DiscoverOption {

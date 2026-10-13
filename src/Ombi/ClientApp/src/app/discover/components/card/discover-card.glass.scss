@@ -1,0 +1,178 @@
+// Aurora glass treatment: tilt + glare, frosted badges, gradient and media-server actions.
+.card-inner {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 18px 40px -26px rgba(0, 0, 0, 0.9);
+
+    &:hover,
+    &:focus-within {
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, 0.24),
+            0 34px 60px -24px rgba(10, 6, 30, 0.9),
+            0 0 40px -12px rgba(var(--au-accent-rgb), 0.35);
+    }
+
+    &.is-tilting {
+        transform:
+            perspective(900px)
+            rotateX(calc(var(--tilt-y, 0) * -8deg))
+            rotateY(calc(var(--tilt-x, 0) * 10deg))
+            translate3d(0, -6px, 0)
+            scale(1.05);
+        transition:
+            transform 0.14s linear,
+            box-shadow 0.6s var(--au-ease-out);
+    }
+
+    &.is-tilting .card-glare {
+        opacity: 1;
+    }
+}
+
+.card-overlay {
+    background: linear-gradient(to top, rgba(16, 10, 36, 0.92) 0%, rgba(16, 10, 36, 0.45) 48%, rgba(16, 10, 36, 0) 80%);
+}
+
+.status-badge,
+.type-badge {
+    border-color: rgba(255, 255, 255, 0.22);
+    // Glass sheen over a dark base so labels stay legible on bright artwork.
+    background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04)),
+        rgba(14, 10, 32, 0.55);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(180%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 8px 18px -10px rgba(0, 0, 0, 0.7);
+}
+
+// ─── Media server badge ("On Plex") ──────────────────────
+.server-mark {
+    flex: none;
+    width: 11px;
+    height: 11px;
+    fill: currentColor;
+    font-size: 10px;
+    line-height: 1;
+}
+
+.status-badge--server {
+    --server: var(--au-plex);
+    padding-left: 7px;
+    border-color: color-mix(in srgb, var(--server) 55%, transparent);
+    background:
+        linear-gradient(160deg, color-mix(in srgb, var(--server) 30%, transparent), rgba(255, 255, 255, 0.03)),
+        rgba(14, 10, 32, 0.66);
+    color: #fff;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.24),
+        0 8px 20px -10px color-mix(in srgb, var(--server) 70%, transparent);
+
+    .server-mark {
+        color: var(--server);
+        filter: drop-shadow(0 0 4px color-mix(in srgb, var(--server) 80%, transparent));
+    }
+
+    &[data-server="emby"] {
+        --server: var(--au-emby);
+    }
+
+    &[data-server="jellyfin"] {
+        --server: var(--au-jellyfin);
+    }
+}
+
+// ─── Actions ─────────────────────────────────────────────
+.request-btn {
+    background: var(--au-gradient);
+    background-size: 160% 100%;
+    background-position: 0% 50%;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        0 12px 26px -10px rgba(139, 92, 246, 0.7);
+    transition:
+        transform 0.25s var(--au-ease-out),
+        background-position 0.6s var(--au-ease-out),
+        box-shadow 0.25s ease;
+
+    &:hover {
+        background-position: 100% 50%;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.45),
+            0 16px 32px -10px rgba(244, 114, 182, 0.65);
+    }
+}
+
+.play-btn {
+    --server: var(--au-plex);
+    width: 100%;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 12px;
+    border-radius: var(--au-control-radius);
+    background: linear-gradient(120deg, color-mix(in srgb, var(--server) 92%, #fff), var(--server));
+    color: #14100a;
+    font-family: var(--au-font);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.45),
+        0 12px 26px -10px color-mix(in srgb, var(--server) 80%, transparent);
+    transition:
+        transform 0.25s var(--au-ease-out),
+        box-shadow 0.25s ease,
+        filter 0.2s ease;
+
+    .server-mark {
+        width: 12px;
+        height: 12px;
+    }
+
+    i {
+        font-size: 0.7rem;
+    }
+
+    &:hover {
+        color: #14100a;
+        text-decoration: none;
+        transform: translate3d(0, -1px, 0);
+        filter: brightness(1.08);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.55),
+            0 16px 32px -10px color-mix(in srgb, var(--server) 90%, transparent);
+    }
+
+    &:active {
+        transform: scale(0.97);
+    }
+
+    &:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+    }
+
+    &--emby {
+        --server: var(--au-emby);
+        color: #fff;
+
+        &:hover {
+            color: #fff;
+        }
+    }
+
+    &--jellyfin {
+        --server: var(--au-jellyfin);
+        color: #fff;
+
+        &:hover {
+            color: #fff;
+        }
+    }
+}

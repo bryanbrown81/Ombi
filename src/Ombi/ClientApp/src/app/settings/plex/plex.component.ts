@@ -50,7 +50,7 @@ import { PlexServerDialogData, PlexSyncType } from "./components/models";
         TableModule
     ],
     templateUrl: "./plex.component.html",
-    styleUrls: ["./plex.component.scss"]
+    styleUrls: ["./plex.component.scss", "./plex.aurora.scss"]
 })
 export class PlexComponent implements OnInit, OnDestroy {
     public settings: IPlexSettings;

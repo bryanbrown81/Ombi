@@ -1,0 +1,231 @@
+// Aurora layer for the request grids (movies, TV, albums): glass cards with the poster beside
+// the details, frosted toolbar pills and gradient selection states.
+
+// ─── Toolbar pills ───────────────────────────────────────
+.chip,
+.control-pill,
+.view-toggle {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)), rgba(14, 18, 34, 0.4);
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
+    backdrop-filter: blur(16px) saturate(170%);
+    color: var(--au-text-2);
+}
+
+.chip,
+.control-pill {
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.26);
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)), rgba(14, 18, 34, 0.4);
+        color: #fff;
+    }
+
+    &.active {
+        border-color: rgba(255, 255, 255, 0.24);
+        background: linear-gradient(135deg, rgba(98, 210, 250, 0.32), rgba(139, 92, 246, 0.36));
+        color: #fff;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 8px 20px -10px rgba(139, 92, 246, 0.8);
+    }
+}
+
+.view-toggle button {
+    &:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    &.active {
+        background: var(--au-gradient);
+        color: #fff;
+    }
+}
+
+::ng-deep .filter-menu.mat-menu-panel { /* NOSONAR */
+    border-color: var(--au-glass-border);
+    background: var(--au-glass-strong);
+    -webkit-backdrop-filter: var(--au-glass-blur);
+    backdrop-filter: var(--au-glass-blur);
+}
+
+// ─── Cards ───────────────────────────────────────────────
+.card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 18px;
+}
+
+.request-card {
+    display: grid;
+    grid-template-columns: 116px minmax(0, 1fr);
+    position: relative;
+    border: 1px solid var(--au-glass-border);
+    border-radius: var(--au-card-radius);
+    background: var(--au-glass);
+    -webkit-backdrop-filter: var(--au-glass-blur);
+    backdrop-filter: var(--au-glass-blur);
+    box-shadow: var(--au-glass-highlight), 0 20px 44px -32px rgba(0, 0, 0, 0.95);
+    transition:
+        transform 0.5s var(--au-ease-out),
+        border-color 0.3s ease,
+        box-shadow 0.5s var(--au-ease-out);
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.22);
+        background: var(--au-glass);
+        transform: translate3d(0, -3px, 0);
+        box-shadow:
+            var(--au-glass-highlight),
+            0 30px 60px -30px rgba(10, 6, 30, 0.95),
+            0 0 40px -18px rgba(var(--au-accent-rgb), 0.35);
+    }
+
+    &.selected {
+        border-color: rgba(var(--au-accent-rgb), 0.6);
+        background: linear-gradient(160deg, rgba(98, 210, 250, 0.12), rgba(139, 92, 246, 0.08)), rgba(18, 22, 40, 0.55);
+    }
+}
+
+// The grid-specific sheets cap the poster at 200px; let it fill the card's height instead.
+.request-card .card-poster {
+    align-self: stretch;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    // The grid sheets set a 2:3 ratio; here the column fixes the width and the row the height.
+    aspect-ratio: auto;
+    min-height: 174px;
+    background: rgba(255, 255, 255, 0.04);
+
+    .no-poster {
+        background: rgba(255, 255, 255, 0.04);
+
+        i {
+            color: rgba(255, 255, 255, 0.2);
+        }
+    }
+}
+
+.poster-overlay {
+    background: linear-gradient(to top, rgba(16, 10, 36, 0.92) 0%, rgba(16, 10, 36, 0.2) 70%);
+
+    .view-details {
+        color: #fff;
+    }
+}
+
+.card-body {
+    min-width: 0;
+    padding: 14px 16px;
+}
+
+// These class names collide with Bootstrap's card parts, which add padding, borders and fills.
+.card-header {
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.card-title {
+    margin-bottom: 0;
+    color: #fff;
+}
+
+.card-select {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(14, 10, 32, 0.55);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+// ─── Status pills ────────────────────────────────────────
+.status-badge {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+
+    &.status-available {
+        border-color: rgba(52, 211, 153, 0.35);
+        background: rgba(52, 211, 153, 0.14);
+    }
+
+    &.status-pending {
+        border-color: rgba(251, 191, 36, 0.35);
+        background: rgba(251, 191, 36, 0.14);
+    }
+
+    &.status-processing {
+        border-color: rgba(96, 165, 250, 0.35);
+        background: rgba(96, 165, 250, 0.14);
+    }
+
+    &.status-denied {
+        border-color: rgba(248, 113, 113, 0.35);
+        background: rgba(248, 113, 113, 0.14);
+    }
+
+    &.status-default {
+        border-color: rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+    }
+}
+
+.meta-item {
+    color: var(--au-text-3);
+}
+
+// ─── Card actions ────────────────────────────────────────
+.btn-detail {
+    border-radius: 999px;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+
+    &:hover {
+        background: var(--au-gradient);
+        color: #fff;
+    }
+}
+
+.btn-options {
+    border-color: rgba(255, 255, 255, 0.14);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.26);
+        background: rgba(255, 255, 255, 0.12);
+    }
+}
+
+// ─── Compact table view ──────────────────────────────────
+.compact-table-wrapper {
+    border-color: var(--au-glass-border);
+    border-radius: var(--au-card-radius);
+    background: var(--au-glass);
+    -webkit-backdrop-filter: var(--au-glass-blur);
+    backdrop-filter: var(--au-glass-blur);
+}
+
+.compact-table tbody tr {
+    &:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    &.selected {
+        background: rgba(var(--au-accent-rgb), 0.08);
+    }
+}
+
+:host ::ng-deep .mat-paginator { /* NOSONAR */
+    border-radius: 14px;
+    background: transparent !important;
+}
+
+@media (max-width: 640px) {
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .request-card {
+        grid-template-columns: 96px minmax(0, 1fr);
+    }
+}

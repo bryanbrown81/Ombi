@@ -7,9 +7,9 @@
     position: relative;
     isolation: isolate;
     min-height: 70vh;
-    padding: clamp(28px, 4vw, 60px) var(--dx-gutter) 96px;
-    font-family: var(--dx-font);
-    color: var(--dx-text);
+    padding: clamp(28px, 4vw, 60px) var(--au-gutter) 96px;
+    font-family: var(--au-font);
+    color: var(--au-text);
 }
 
 // ─── Progress (refreshing / loading more) ────────────────
@@ -18,7 +18,7 @@
     top: 56px;
     z-index: 5;
     height: 2px;
-    margin: 0 calc(var(--dx-gutter) * -1) -2px;
+    margin: 0 calc(var(--au-gutter) * -1) -2px;
     overflow: hidden;
 }
 
@@ -27,8 +27,8 @@
     width: 38%;
     height: 100%;
     border-radius: 2px;
-    background: linear-gradient(90deg, transparent, var(--dx-accent), transparent);
-    animation: results-progress 1.1s var(--dx-ease-in-out) infinite;
+    background: linear-gradient(90deg, transparent, var(--au-accent), transparent);
+    animation: results-progress 1.1s var(--au-ease-in-out) infinite;
 }
 
 @keyframes results-progress {
@@ -44,7 +44,7 @@
 // ─── Header ──────────────────────────────────────────────
 .results-header {
     margin-bottom: clamp(24px, 3vw, 40px);
-    animation: dx-rise 0.8s var(--dx-ease-out) backwards;
+    animation: au-rise 0.8s var(--au-ease-out) backwards;
 }
 
 .results-eyebrow {
@@ -53,22 +53,22 @@
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--dx-text-3);
+    color: var(--au-text-3);
 }
 
 .results-title {
     margin: 0 0 24px;
-    font-family: var(--dx-font);
+    font-family: var(--au-font);
     font-size: clamp(2rem, 3vw + 1rem, 3.6rem);
     font-weight: 800;
     line-height: 1.02;
     letter-spacing: -0.03em;
-    color: var(--dx-text);
+    color: var(--au-text);
     overflow-wrap: anywhere;
 }
 
 .results-quote {
-    color: var(--dx-text-3);
+    color: var(--au-text-3);
     font-weight: 300;
 }
 
@@ -83,7 +83,7 @@
     margin: 0;
     font-size: 0.82rem;
     font-weight: 500;
-    color: var(--dx-text-3);
+    color: var(--au-text-3);
     font-variant-numeric: tabular-nums;
 }
 
@@ -99,8 +99,8 @@
     grid-template-columns: repeat(auto-fill, minmax(var(--results-card-min), 1fr));
     gap: clamp(18px, 2vw, 32px) clamp(12px, 1.4vw, 22px);
     transition:
-        opacity 0.35s var(--dx-ease-out),
-        filter 0.35s var(--dx-ease-out);
+        opacity 0.35s var(--au-ease-out),
+        filter 0.35s var(--au-ease-out);
 
     &.is-refreshing {
         opacity: 0.38;
@@ -111,7 +111,7 @@
 
 .results-cell {
     min-width: 0;
-    animation: dx-card-in 0.7s var(--dx-ease-out) backwards;
+    animation: au-card-in 0.7s var(--au-ease-out) backwards;
     animation-delay: calc(var(--i, 0) * 30ms);
 }
 
@@ -126,7 +126,7 @@
     align-items: center;
     padding: clamp(40px, 10vh, 120px) 0;
     text-align: center;
-    animation: dx-rise 0.8s var(--dx-ease-out) 0.1s backwards;
+    animation: au-rise 0.8s var(--au-ease-out) 0.1s backwards;
 }
 
 .results-empty-art {
@@ -137,17 +137,17 @@
     height: 96px;
     margin-bottom: 28px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(var(--dx-accent-rgb), 0.16), transparent 70%);
-    color: var(--dx-accent);
+    background: radial-gradient(circle, rgba(var(--au-accent-rgb), 0.16), transparent 70%);
+    color: var(--au-accent);
     font-size: 1.8rem;
 }
 
 .results-empty-ring {
     position: absolute;
     inset: 0;
-    border: 1px solid rgba(var(--dx-accent-rgb), 0.35);
+    border: 1px solid rgba(var(--au-accent-rgb), 0.35);
     border-radius: 50%;
-    animation: results-ring 2.8s var(--dx-ease-out) infinite;
+    animation: results-ring 2.8s var(--au-ease-out) infinite;
 }
 
 @keyframes results-ring {
@@ -167,7 +167,7 @@
     font-size: clamp(1.3rem, 1vw + 1rem, 1.8rem);
     font-weight: 700;
     letter-spacing: -0.015em;
-    color: var(--dx-text);
+    color: var(--au-text);
 }
 
 .results-empty-text {
@@ -175,93 +175,45 @@
     margin: 0;
     font-size: 0.95rem;
     line-height: 1.6;
-    color: var(--dx-text-2);
+    color: var(--au-text-2);
 }
 
-// ═══ Editorial ═══════════════════════════════════════════
-:host-context(html[data-discover-design="editorial"]) {
-    .results {
-        --results-card-min: clamp(140px, 12.5vw, 210px);
-    }
-
-    .results-eyebrow {
-        letter-spacing: 0.3em;
-        font-weight: 500;
-    }
-
-    .results-title {
-        font-family: var(--dx-font-display);
-        font-size: clamp(2.8rem, 4.4vw + 1rem, 5.6rem);
-        font-weight: 400;
-        line-height: 0.95;
-        letter-spacing: -0.02em;
-    }
-
-    .results-quote {
-        font-style: italic;
-        font-weight: 400;
-    }
-
-    .results-grid {
-        row-gap: clamp(28px, 3vw, 44px);
-    }
-
-    .results-empty-art {
-        border-radius: 0;
-        background: none;
-        color: var(--dx-text);
-    }
-
-    .results-empty-ring {
-        border-color: var(--dx-hairline);
-        border-radius: 0;
-    }
-
-    .results-empty-title {
-        font-family: var(--dx-font-display);
-        font-size: clamp(1.8rem, 1.5vw + 1.2rem, 2.6rem);
-        font-weight: 400;
-    }
+// ─── Aurora accents ──────────────────────────────────────
+.results::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -120px 0 auto;
+    height: 560px;
+    pointer-events: none;
+    background:
+        radial-gradient(40% 70% at 15% 20%, rgba(98, 210, 250, 0.2), transparent 70%),
+        radial-gradient(40% 70% at 85% 10%, rgba(139, 92, 246, 0.22), transparent 70%),
+        radial-gradient(30% 50% at 55% 40%, rgba(244, 114, 182, 0.12), transparent 70%);
 }
 
-// ═══ Aurora ══════════════════════════════════════════════
-:host-context(html[data-discover-design="aurora"]) {
-    .results::before {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        inset: -120px 0 auto;
-        height: 560px;
-        pointer-events: none;
-        background:
-            radial-gradient(40% 70% at 15% 20%, rgba(98, 210, 250, 0.2), transparent 70%),
-            radial-gradient(40% 70% at 85% 10%, rgba(139, 92, 246, 0.22), transparent 70%),
-            radial-gradient(30% 50% at 55% 40%, rgba(244, 114, 182, 0.12), transparent 70%);
-    }
+.results-title {
+    background: linear-gradient(180deg, #fff 30%, rgba(255, 255, 255, 0.68));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
 
-    .results-title {
-        background: linear-gradient(180deg, #fff 30%, rgba(255, 255, 255, 0.68));
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-    }
+.results-quote {
+    color: rgba(255, 255, 255, 0.4);
+}
 
-    .results-quote {
-        color: rgba(255, 255, 255, 0.4);
-    }
+.results-empty-art {
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.28), transparent 70%);
+    color: #fff;
+}
 
-    .results-empty-art {
-        background: radial-gradient(circle, rgba(139, 92, 246, 0.28), transparent 70%);
-        color: #fff;
-    }
+.results-empty-ring {
+    border-color: rgba(139, 92, 246, 0.5);
+}
 
-    .results-empty-ring {
-        border-color: rgba(139, 92, 246, 0.5);
-    }
-
-    .results-progress-bar {
-        background: linear-gradient(90deg, transparent, var(--dx-aurora-1), var(--dx-aurora-2), var(--dx-aurora-3), transparent);
-    }
+.results-progress-bar {
+    background: linear-gradient(90deg, transparent, var(--au-aurora-1), var(--au-aurora-2), var(--au-aurora-3), transparent);
 }
 
 @media (max-width: 600px) {

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TopBannerComponent } from './top-banner.component';
+import { AmbientService } from '../../../../shared/ambient/ambient.service';
 
 describe('TopBannerComponent', () => {
   function createComponent() {
@@ -47,6 +48,29 @@ describe('TopBannerComponent', () => {
       const result = comp.getBackgroundImage();
       expect(mockSanitizer.bypassSecurityTrustStyle).toHaveBeenCalledWith('url(https://image.tmdb.org/test.jpg)');
       expect(result).toBe('safe-style:url(https://image.tmdb.org/test.jpg)');
+    });
+  });
+
+  describe('ambient backdrop', () => {
+    it('builds TMDb thumbnails from image paths and passes full urls through', () => {
+      expect(TopBannerComponent.ambientUrl('/abc.jpg')).toBe('https://image.tmdb.org/t/p/w300/abc.jpg');
+      expect(TopBannerComponent.ambientUrl('abc.jpg')).toBe('https://image.tmdb.org/t/p/w300/abc.jpg');
+      expect(TopBannerComponent.ambientUrl('https://fanart.tv/a.jpg')).toBe('https://fanart.tv/a.jpg');
+      expect(TopBannerComponent.ambientUrl(null)).toBeNull();
+    });
+
+    it('tints the ambient while open and releases it when destroyed', () => {
+      const ambient = new AmbientService();
+      const comp = new TopBannerComponent({ bypassSecurityTrustStyle: (v: string) => v } as any, ambient);
+      comp.ambient = '/backdrop.jpg';
+      expect(ambient.image()).toBe('https://image.tmdb.org/t/p/w300/backdrop.jpg');
+      comp.ngOnDestroy();
+      expect(ambient.image()).toBeNull();
+    });
+
+    it('works without the ambient service', () => {
+      const comp = new TopBannerComponent({ bypassSecurityTrustStyle: (v: string) => v } as any);
+      expect(() => { comp.ambient = '/x.jpg'; comp.ngOnDestroy(); }).not.toThrow();
     });
   });
 });

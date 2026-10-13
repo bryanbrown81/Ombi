@@ -1,0 +1,4 @@
+// Aurora theme entry point. Listed last in angular.json "styles" so it layers over
+// Angular Material, Bootstrap and PrimeNG without needing !important.
+@use "./aurora.scss";
+@use "./aurora-components.scss";

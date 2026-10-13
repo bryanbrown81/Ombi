@@ -29,7 +29,7 @@ import { MatCardModule } from "@angular/material/card";
 @Component({
     standalone: true,
     templateUrl: "./artist-details.component.html",
-    styleUrls: ["../../media-details.component.scss"],
+    styleUrls: ["../../media-details.component.scss", "../../media-details.aurora.scss"],
     imports: [
         CommonModule,
         ReactiveFormsModule,

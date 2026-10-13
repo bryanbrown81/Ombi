@@ -1,6 +1,5 @@
 import { Directive, ElementRef, NgZone, OnDestroy, effect, inject, input } from "@angular/core";
 
-import { DiscoverDesign, DiscoverDesignService } from "../services/discover-design.service";
 import { prefersReducedMotion } from "./reveal.directive";
 
 /**
@@ -8,26 +7,24 @@ import { prefersReducedMotion } from "./reveal.directive";
  * onto the host so the stylesheet decides how much to rotate and where the glare sits.
  * Listeners run outside Angular so pointer movement never triggers change detection.
  *
- * Pass a design id (`ombiTilt="aurora"`) to enable it only while that design is active,
- * or leave it empty to always enable it.
+ * Bind `[ombiTilt]="false"` to switch it off.
  */
 @Directive({
     standalone: true,
     selector: "[ombiTilt]",
 })
 export class TiltDirective implements OnDestroy {
-    public readonly ombiTilt = input<DiscoverDesign | "">("");
+    public readonly ombiTilt = input<boolean | "">(true);
 
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly zone = inject(NgZone);
-    private readonly designService = inject(DiscoverDesignService);
     private frame = 0;
     private attached = false;
 
     constructor() {
         effect(() => {
-            const only = this.ombiTilt();
-            const enabled = !only || this.designService.design() === only;
+            // A bare `ombiTilt` attribute binds "", which means enabled.
+            const enabled = this.ombiTilt() !== false;
             if (enabled && this.supportsTilt()) {
                 this.attach();
             } else {

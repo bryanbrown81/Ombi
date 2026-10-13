@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit, Optional } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
 import { MatButtonModule } from "@angular/material/button";
@@ -19,11 +19,21 @@ import { TranslateService } from "@ngx-translate/core";
 import { ImageComponent } from "../../../components";
 import { TiltDirective } from "../../directives/tilt.directive";
 
+export type MediaServerKey = "plex" | "emby" | "jellyfin";
+
+export interface IMediaServerLink {
+    key: MediaServerKey;
+    name: string;
+    url: string;
+    /** Translation key for the "Play on …" action. */
+    playKey: string;
+}
+
 @Component({
     standalone: true,
     selector: "discover-card",
     templateUrl: "./discover-card.component.html",
-    styleUrls: ["./discover-card.component.scss", "./discover-card.actions.scss", "./discover-card.editorial.scss", "./discover-card.aurora.scss"],
+    styleUrls: ["./discover-card.component.scss", "./discover-card.actions.scss", "./discover-card.glass.scss"],
     imports: [
         CommonModule,
         RouterModule,
@@ -54,7 +64,8 @@ export class DiscoverCardComponent implements OnInit {
     private tvSearchResult: ISearchTvResultV2;
 
     constructor(private searchService: SearchV2Service, private dialog: MatDialog, private requestService: RequestService,
-        public messageService: MessageService, private translate: TranslateService) { }
+        public messageService: MessageService, private translate: TranslateService,
+        @Optional() private changeDetector?: ChangeDetectorRef) { }
 
     public ngOnInit() {
         if (this.result.type == RequestType.tvShow) {
@@ -86,7 +97,7 @@ export class DiscoverCardComponent implements OnInit {
                 this.searchService.getReleaseGroupArt(this.result.id.toString()).subscribe(art => {
                     if (art.image) {
                         this.result.posterPath = art.image;
-
+                        this.refresh();
                     }
                 })
             }
@@ -94,6 +105,7 @@ export class DiscoverCardComponent implements OnInit {
             this.result.overview = x.overview;
             this.fullyLoaded = true;
             this.requestable = true;
+            this.refresh();
         });
     }
 
@@ -127,8 +139,36 @@ export class DiscoverCardComponent implements OnInit {
         return "";
     }
 
+    /** The media server holding this title, preferring Plex, then Emby, then Jellyfin. */
+    public getMediaServer(): IMediaServerLink | null {
+        const r = this.result;
+        if (r?.plexUrl) {
+            return { key: "plex", name: "Plex", url: r.plexUrl, playKey: "Search.ViewOnPlex" };
+        }
+        if (r?.embyUrl) {
+            return { key: "emby", name: "Emby", url: r.embyUrl, playKey: "Search.ViewOnEmby" };
+        }
+        if (r?.jellyfinUrl) {
+            return { key: "jellyfin", name: "Jellyfin", url: r.jellyfinUrl, playKey: "Search.ViewOnJellyfin" };
+        }
+        return null;
+    }
+
+    /** The server to play from, when the title is (at least partly) available on one. */
+    public getPlayTarget(): IMediaServerLink | null {
+        return this.result?.available ? this.getMediaServer() : null;
+    }
+
+    public isPartlyAvailable(): boolean {
+        return !!this.tvSearchResult?.partlyAvailable && !this.tvSearchResult?.fullyAvailable;
+    }
+
     public getAvailabilityStatus(): string {
         if (this.result.available) {
+            const server = this.getMediaServer();
+            if (server) {
+                return this.translate.instant(this.isPartlyAvailable() ? "Discovery.Card.PartlyOnServer" : "Discovery.Card.OnServer", { server: server.name });
+            }
             return this.translate.instant("Common.Available");
         }
         if (this.tvSearchResult?.partlyAvailable) {
@@ -156,7 +196,7 @@ export class DiscoverCardComponent implements OnInit {
               data: { series: this.tvSearchResult, isAdmin: this.isAdmin },
               panelClass: "modal-panel",
             });
-            dialog.afterClosed().subscribe(() => (this.loading = false));
+            dialog.afterClosed().subscribe(() => this.finishLoading());
             break;
           case RequestType.movie:
             const movieRequest: IMovieRequestModel = {
@@ -183,7 +223,7 @@ export class DiscoverCardComponent implements OnInit {
             );
             adminRequestDialog.afterClosed().subscribe((result) => {
               if (!result) {
-                this.loading = false;
+                this.finishLoading();
                 return;
               }
 
@@ -210,11 +250,11 @@ export class DiscoverCardComponent implements OnInit {
               this.messageService.sendRequestEngineResultError(response);
             }
 
-            this.loading = false;
+            this.finishLoading();
           },
           error: (error) => {
             this.messageService.sendRequestEngineResultError(error);
-            this.loading = false;
+            this.finishLoading();
           },
         });
     }
@@ -253,10 +293,26 @@ export class DiscoverCardComponent implements OnInit {
         this.result.rating = updated.voteAverage;
         this.result.overview = updated.overview;
         this.result.imdbid = updated.imdbId;
+        this.result.plexUrl = updated.plexUrl;
+        this.result.embyUrl = updated.embyUrl;
+        this.result.jellyfinUrl = updated.jellyfinUrl;
 
         this.fullyLoaded = true;
+        this.refresh();
     }
 
+    private finishLoading() {
+        this.loading = false;
+        this.refresh();
+    }
+
+    /**
+     * Cards sit inside OnPush lists (the discover rails and the search results), so state that
+     * arrives asynchronously must mark the card for checking or it never renders.
+     */
+    private refresh() {
+        this.changeDetector?.markForCheck();
+    }
 
     private setTvDefaults(x: ISearchTvResultV2) {
         if (x.imdbId) {
@@ -277,8 +333,12 @@ export class DiscoverCardComponent implements OnInit {
         this.result.approved = updated.approved;
         this.result.available = updated.fullyAvailable || updated.partlyAvailable;
         this.result.denied = updated.denied;
+        this.result.plexUrl = updated.plexUrl;
+        this.result.embyUrl = updated.embyUrl;
+        this.result.jellyfinUrl = updated.jellyfinUrl;
 
         this.fullyLoaded = true;
+        this.refresh();
     }
 
 }

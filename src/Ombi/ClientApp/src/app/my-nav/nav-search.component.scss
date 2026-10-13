@@ -79,7 +79,7 @@
     border: 2px solid $ombi-active;
     border-right-color: transparent;
     border-radius: 50%;
-    animation: dx-spin 0.7s linear infinite;
+    animation: au-spin 0.7s linear infinite;
 }
 
 .search-input {
@@ -116,7 +116,7 @@
     font-size: 11px;
     font-weight: 600;
     white-space: nowrap;
-    animation: dx-fade 0.3s ease 0.2s backwards;
+    animation: au-fade 0.3s ease 0.2s backwards;
 }
 
 .search-clear-btn {

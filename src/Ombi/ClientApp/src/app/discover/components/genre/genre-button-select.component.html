@@ -1,19 +1,15 @@
-<header class="dx-section-head">
-    @if (index()) {
-        <span class="dx-section-index">{{ index() }}</span>
-    }
-    <h2 class="dx-section-title" id="discover-genres-title">{{ 'Discovery.BrowseGenres' | translate }}</h2>
-    <span class="dx-section-rule" aria-hidden="true"></span>
-    <div class="dx-section-actions">
-        <div class="dx-seg" role="group" aria-labelledby="discover-genres-title"
+<header class="au-section-head">
+    <h2 class="au-section-title" id="discover-genres-title">{{ 'Discovery.BrowseGenres' | translate }}</h2>
+    <div class="au-section-actions">
+        <div class="au-seg" role="group" aria-labelledby="discover-genres-title"
             [style.--seg-count]="2" [style.--seg-index]="mediaType() === 'movie' ? 0 : 1">
-            <span class="dx-seg__indicator" aria-hidden="true"></span>
-            <span class="dx-seg__cell" [class.filter-active]="mediaType() === 'movie'">
-                <button type="button" class="dx-seg__btn" id="genreMovies-button" [attr.aria-pressed]="mediaType() === 'movie'"
+            <span class="au-seg__indicator" aria-hidden="true"></span>
+            <span class="au-seg__cell" [class.filter-active]="mediaType() === 'movie'">
+                <button type="button" class="au-seg__btn" id="genreMovies-button" [attr.aria-pressed]="mediaType() === 'movie'"
                     (click)="setMediaType('movie')">{{ 'Discovery.Movies' | translate }}</button>
             </span>
-            <span class="dx-seg__cell" [class.filter-active]="mediaType() === 'tv'">
-                <button type="button" class="dx-seg__btn" id="genreTv-button" [attr.aria-pressed]="mediaType() === 'tv'"
+            <span class="au-seg__cell" [class.filter-active]="mediaType() === 'tv'">
+                <button type="button" class="au-seg__btn" id="genreTv-button" [attr.aria-pressed]="mediaType() === 'tv'"
                     (click)="setMediaType('tv')">{{ 'Discovery.Tv' | translate }}</button>
             </span>
         </div>
@@ -40,7 +36,7 @@
 } @else {
     <div class="genre-list genre-list--loading" aria-hidden="true">
         @for (item of [92, 120, 86, 104, 132, 96, 110, 88, 124, 100]; track $index) {
-            <span class="dx-skeleton genre-skeleton" [style.width.px]="item"></span>
+            <span class="au-skeleton genre-skeleton" [style.width.px]="item"></span>
         }
     </div>
 }

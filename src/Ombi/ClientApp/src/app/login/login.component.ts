@@ -26,7 +26,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 @Component({
         standalone: true,
   templateUrl: "./login.component.html",
-  styleUrls: ["./login.component.scss"],
+  styleUrls: ["./login.component.scss", "./login.aurora.scss"],
   imports: [
     CommonModule,
     FormsModule,

@@ -245,4 +245,94 @@ describe('DiscoverCardComponent', () => {
       expect(mockDialog.open).toHaveBeenCalled();
     });
   });
+
+  describe('media server availability', () => {
+    it('prefers Plex, then Emby, then Jellyfin', () => {
+      const { comp } = createComponent();
+      comp.result = makeResult({ available: true, plexUrl: 'https://plex/x', embyUrl: 'https://emby/x', jellyfinUrl: 'https://jf/x' });
+      expect(comp.getMediaServer()).toMatchObject({ key: 'plex', name: 'Plex', url: 'https://plex/x', playKey: 'Search.ViewOnPlex' });
+
+      comp.result = makeResult({ available: true, embyUrl: 'https://emby/x', jellyfinUrl: 'https://jf/x' });
+      expect(comp.getMediaServer()?.key).toBe('emby');
+
+      comp.result = makeResult({ available: true, jellyfinUrl: 'https://jf/x' });
+      expect(comp.getMediaServer()?.key).toBe('jellyfin');
+
+      comp.result = makeResult({ available: true });
+      expect(comp.getMediaServer()).toBeNull();
+    });
+
+    it('only offers playback when the title is available', () => {
+      const { comp } = createComponent();
+      comp.result = makeResult({ available: false, plexUrl: 'https://plex/x' });
+      expect(comp.getPlayTarget()).toBeNull();
+
+      comp.result = makeResult({ available: true, plexUrl: 'https://plex/x' });
+      expect(comp.getPlayTarget()?.url).toBe('https://plex/x');
+    });
+
+    it('labels the badge with the server name', () => {
+      const { comp, mockTranslate } = createComponent();
+      comp.result = makeResult({ available: true, plexUrl: 'https://plex/x' });
+      expect(comp.getAvailabilityStatus()).toBe('Discovery.Card.OnServer');
+      expect(mockTranslate.instant).toHaveBeenCalledWith('Discovery.Card.OnServer', { server: 'Plex' });
+    });
+
+    it('labels partly available shows as partly on the server', () => {
+      const { comp, mockTranslate } = createComponent();
+      comp.result = makeResult({ type: RequestType.tvShow, available: true, plexUrl: 'https://plex/x' });
+      (comp as any).tvSearchResult = { partlyAvailable: true, fullyAvailable: false };
+      comp.getAvailabilityStatus();
+      expect(mockTranslate.instant).toHaveBeenCalledWith('Discovery.Card.PartlyOnServer', { server: 'Plex' });
+    });
+
+    it('keeps the plain "Available" label without a server link', () => {
+      const { comp } = createComponent();
+      comp.result = makeResult({ available: true });
+      expect(comp.getAvailabilityStatus()).toBe('Common.Available');
+    });
+
+    it('picks up server links from the full movie details', () => {
+      const { comp, mockSearchService } = createComponent();
+      mockSearchService.getFullMovieDetails.mockReturnValue(of({ imdbId: 'tt1', available: true, plexUrl: 'https://plex/movie' }));
+      comp.result = makeResult({ type: RequestType.movie, imdbid: '' });
+      comp.ngOnInit();
+      expect(comp.result.plexUrl).toBe('https://plex/movie');
+      expect(comp.getPlayTarget()?.key).toBe('plex');
+    });
+
+    it('picks up server links from the TV details', async () => {
+      const { comp, mockSearchService } = createComponent();
+      mockSearchService.getTvInfoWithMovieDbId.mockResolvedValue({ id: 5, title: 'Show', fullyAvailable: true, partlyAvailable: false, jellyfinUrl: 'https://jf/show' });
+      comp.result = makeResult({ type: RequestType.tvShow });
+      await comp.getExtraTvInfo();
+      expect(comp.result.jellyfinUrl).toBe('https://jf/show');
+      expect(comp.getPlayTarget()?.key).toBe('jellyfin');
+    });
+  });
+
+  describe('change detection inside OnPush lists', () => {
+    it('marks itself for check once async movie details arrive', () => {
+      const { comp, mockSearchService } = createComponent();
+      const cdr = { markForCheck: vi.fn() };
+      (comp as any).changeDetector = cdr;
+      mockSearchService.getFullMovieDetails.mockReturnValue(of({ imdbId: 'tt9', available: false }));
+      comp.result = makeResult({ type: RequestType.movie, imdbid: '' });
+
+      comp.ngOnInit();
+
+      expect(comp.fullyLoaded).toBe(true);
+      expect(cdr.markForCheck).toHaveBeenCalled();
+    });
+
+    it('marks itself for check when a request completes', () => {
+      const { comp } = createComponent();
+      const cdr = { markForCheck: vi.fn() };
+      (comp as any).changeDetector = cdr;
+      comp.result = makeResult({ type: RequestType.movie });
+      comp.request({ preventDefault: vi.fn() }, false);
+      expect(comp.loading).toBe(false);
+      expect(cdr.markForCheck).toHaveBeenCalled();
+    });
+  });
 });

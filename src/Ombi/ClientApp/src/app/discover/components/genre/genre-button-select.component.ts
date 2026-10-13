@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, input, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit, computed, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TranslateModule } from "@ngx-translate/core";
 
@@ -57,9 +57,6 @@ const GENRE_STYLE: Record<number, { icon: string; hue: number }> = {
     ]
 })
 export class GenreButtonSelectComponent implements OnInit {
-
-    /** Editorial section number, e.g. "01". */
-    public readonly index = input<string>("");
 
     public movieGenreList = signal<IGenreSelect[]>(null);
     public tvGenreList = signal<IGenreSelect[]>(null);

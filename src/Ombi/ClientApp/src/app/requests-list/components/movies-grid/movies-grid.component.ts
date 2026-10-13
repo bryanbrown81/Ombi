@@ -30,7 +30,7 @@ import { BaseGridComponent } from "../base-grid/base-grid.component";
     standalone: true,
     templateUrl: "./movies-grid.component.html",
     selector: "movies-grid",
-    styleUrls: ["../_shared-card-grid.scss", "./movies-grid.component.scss"],
+    styleUrls: ["../_shared-card-grid.scss", "../_shared-card-grid.aurora.scss", "./movies-grid.component.scss"],
     imports: [
         CommonModule,
         RouterModule,

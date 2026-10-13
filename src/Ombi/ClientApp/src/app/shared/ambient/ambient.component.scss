@@ -1,0 +1,116 @@
+// Global (ViewEncapsulation.None); every selector is namespaced with `ombi-ambient`.
+$grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+ombi-ambient {
+    display: contents;
+}
+
+// Fixed behind the app shell (which sits at z-index 1).
+.ombi-ambient {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: var(--au-bg);
+
+    // Vignette so content edges stay calm and text stays legible.
+    &::after {
+        content: "";
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        background:
+            radial-gradient(120% 85% at 50% 0%, transparent 30%, rgba(var(--au-bg-rgb), 0.86) 100%),
+            linear-gradient(180deg, rgba(var(--au-bg-rgb), 0) 30%, rgba(var(--au-bg-rgb), 0.7) 100%);
+    }
+}
+
+.ombi-ambient__img {
+    position: absolute;
+    inset: -12%;
+    width: 124%;
+    height: 124%;
+    object-fit: cover;
+    opacity: 0;
+    filter: blur(72px) saturate(1.6) brightness(0.8);
+    transition: opacity 1.8s var(--au-ease-in-out);
+
+    &.is-active {
+        opacity: 0.46;
+    }
+}
+
+.ombi-ambient__blob {
+    position: absolute;
+    width: 62vmax;
+    height: 62vmax;
+    border-radius: 50%;
+    opacity: 0.24;
+    mix-blend-mode: screen;
+    transition: opacity 1.8s var(--au-ease-in-out);
+
+    &--a {
+        top: -28vmax;
+        left: -16vmax;
+        background: radial-gradient(closest-side, var(--au-aurora-1), transparent);
+        animation: ombi-ambient-drift-a 26s ease-in-out infinite alternate;
+    }
+
+    &--b {
+        top: -18vmax;
+        right: -24vmax;
+        background: radial-gradient(closest-side, var(--au-aurora-2), transparent);
+        animation: ombi-ambient-drift-b 32s ease-in-out infinite alternate;
+    }
+
+    &--c {
+        bottom: -34vmax;
+        left: 20vmax;
+        opacity: 0.16;
+        background: radial-gradient(closest-side, var(--au-aurora-3), transparent);
+        animation: ombi-ambient-drift-c 38s ease-in-out infinite alternate;
+    }
+}
+
+// Artwork carries the colour; the drifting fields add movement on top.
+.ombi-ambient--art .ombi-ambient__blob {
+    opacity: 0.3;
+
+    &--c {
+        opacity: 0.2;
+    }
+}
+
+@keyframes ombi-ambient-drift-a {
+    to {
+        transform: translate3d(14vmax, 10vmax, 0) scale(1.15);
+    }
+}
+
+@keyframes ombi-ambient-drift-b {
+    to {
+        transform: translate3d(-12vmax, 14vmax, 0) scale(0.9);
+    }
+}
+
+@keyframes ombi-ambient-drift-c {
+    to {
+        transform: translate3d(10vmax, -12vmax, 0) scale(1.1);
+    }
+}
+
+.ombi-ambient__grain {
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    opacity: 0.06;
+    background-image: $grain;
+    mix-blend-mode: overlay;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ombi-ambient__blob {
+        animation: none !important;
+    }
+}

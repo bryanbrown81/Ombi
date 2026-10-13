@@ -36,7 +36,7 @@
 </ng-template>
 
 <!-- Shared picker: thumbnails with a progress bar that drains with the rotation timer -->
-<ng-template #picker let-poster="poster">
+<ng-template #picker>
     @if (items().length > 1) {
         <div class="hero-picker" role="group" [attr.aria-label]="'Discovery.Featured' | translate">
             <button
@@ -58,7 +58,7 @@
                     (keydown)="onPickerKeydown($event)"
                     [attr.aria-label]="item.title">
                     <span class="hero-indicator-art">
-                        <img [src]="poster ? posterFor(item) : thumbFor(item)" alt="" loading="lazy" decoding="async">
+                        <img [src]="posterFor(item)" alt="" loading="lazy" decoding="async">
                     </span>
                     <span class="hero-progress" aria-hidden="true">
                         @if (i === activeIndex()) {
@@ -74,82 +74,41 @@
 </ng-template>
 
 @if (loaded() && activeItem()) {
-    @switch (variant()) {
-        @case ('aurora') {
-            <section class="hero hero--aurora" [class.is-halted]="rotationHalted()"
-                aria-roledescription="carousel" [attr.aria-label]="'Discovery.Featured' | translate"
-                (mouseenter)="setHovering(true)" (mouseleave)="setHovering(false)"
-                (focusin)="setHovering(true)" (focusout)="onFocusOut($event)"
-                (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+    <section class="hero hero--aurora" [class.is-halted]="rotationHalted()"
+        aria-roledescription="carousel" [attr.aria-label]="'Discovery.Featured' | translate"
+        (mouseenter)="setHovering(true)" (mouseleave)="setHovering(false)"
+        (focusin)="setHovering(true)" (focusout)="onFocusOut($event)"
+        (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
 
-                <!-- Ambient wash sampled from the artwork; fixed behind the whole page -->
-                <div class="aurora-ambient" aria-hidden="true">
-                    @for (item of items(); track item.id; let i = $index) {
-                        <img class="aurora-ambient-img" [class.is-active]="i === activeIndex()" [src]="thumbFor(item)" alt="">
+        <div class="stage" ombiTilt>
+            <div class="stage-media" aria-hidden="true">
+                <ng-container [ngTemplateOutlet]="slides"></ng-container>
+                <div class="stage-scrim"></div>
+            </div>
+
+            <div class="stage-body">
+                @for (item of activeItems(); track item.id) {
+                    <div class="stage-panel hero-copy">
+                        <ng-container [ngTemplateOutlet]="copy" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+                    </div>
+                    @if (item.posterPath) {
+                        <a class="stage-poster" [routerLink]="getDetailsLink()" tabindex="-1" aria-hidden="true">
+                            <img [src]="posterFor(item)" alt="" decoding="async">
+                            <span class="stage-poster-glare"></span>
+                        </a>
                     }
-                    <span class="aurora-blob aurora-blob--a"></span>
-                    <span class="aurora-blob aurora-blob--b"></span>
-                    <span class="aurora-blob aurora-blob--c"></span>
-                    <span class="aurora-grain"></span>
-                </div>
+                }
+            </div>
 
-                <div class="stage" ombiTilt>
-                    <div class="stage-media" aria-hidden="true">
-                        <ng-container [ngTemplateOutlet]="slides"></ng-container>
-                        <div class="stage-scrim"></div>
-                    </div>
-
-                    <div class="stage-body">
-                        @for (item of activeItems(); track item.id) {
-                            <div class="stage-panel hero-copy">
-                                <ng-container [ngTemplateOutlet]="copy" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
-                            </div>
-                            @if (item.posterPath) {
-                                <a class="stage-poster" [routerLink]="getDetailsLink()" tabindex="-1" aria-hidden="true">
-                                    <img [src]="posterFor(item)" alt="" decoding="async">
-                                    <span class="stage-poster-glare"></span>
-                                </a>
-                            }
-                        }
-                    </div>
-
-                    <div class="stage-picker">
-                        <ng-container [ngTemplateOutlet]="picker" [ngTemplateOutletContext]="{ poster: true }"></ng-container>
-                    </div>
-                </div>
-            </section>
-        }
-        @default {
-            <section class="hero hero--cinema" [class.is-halted]="rotationHalted()"
-                aria-roledescription="carousel" [attr.aria-label]="'Discovery.Featured' | translate"
-                (mouseenter)="setHovering(true)" (mouseleave)="setHovering(false)"
-                (focusin)="setHovering(true)" (focusout)="onFocusOut($event)"
-                (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
-
-                <div class="cinema-media" aria-hidden="true">
-                    <ng-container [ngTemplateOutlet]="slides"></ng-container>
-                    <div class="cinema-scrim"></div>
-                    <div class="cinema-grain"></div>
-                </div>
-
-                <div class="cinema-body">
-                    @for (item of activeItems(); track item.id) {
-                        <div class="cinema-copy hero-copy">
-                            <ng-container [ngTemplateOutlet]="copy" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
-                        </div>
-                    }
-                </div>
-
-                <div class="cinema-picker">
-                    <ng-container [ngTemplateOutlet]="picker" [ngTemplateOutletContext]="{ poster: false }"></ng-container>
-                </div>
-            </section>
-        }
-    }
+            <div class="stage-picker">
+                <ng-container [ngTemplateOutlet]="picker"></ng-container>
+            </div>
+        </div>
+    </section>
 } @else if (!failed()) {
     <!-- Reserve the hero's space while it loads so the page does not jump -->
-    <section class="hero hero--placeholder" [class.hero--aurora]="variant() === 'aurora'" [class.hero--cinema]="variant() !== 'aurora'" aria-hidden="true">
-        <div class="placeholder-frame dx-skeleton">
+    <section class="hero hero--aurora hero--placeholder" aria-hidden="true">
+        <div class="placeholder-frame au-skeleton">
             <div class="placeholder-copy">
                 <span class="placeholder-line placeholder-line--eyebrow"></span>
                 <span class="placeholder-line placeholder-line--title"></span>

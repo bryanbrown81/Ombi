@@ -4,25 +4,22 @@
 
 .discover-page {
     position: relative;
-    // Own stacking context so the Aurora ambient layer (z-index: -1) sits behind the content
-    // but above the app background.
-    isolation: isolate;
     width: 100%;
     min-height: 100vh;
     overflow-x: clip;
     padding-bottom: 96px;
-    font-family: var(--dx-font);
-    color: var(--dx-text);
+    font-family: var(--au-font);
+    color: var(--au-text);
 }
 
 .discover-content {
     position: relative;
     z-index: 1;
-    padding: 0 var(--dx-gutter);
+    padding: clamp(28px, 3.4vw, 52px) var(--au-gutter) 0;
 }
 
 .discover-section {
-    margin-bottom: var(--dx-section-gap);
+    margin-bottom: var(--au-section-gap);
 
     &.is-collapsed {
         display: none;
@@ -31,24 +28,6 @@
 
 .seasonal-sentinel {
     height: 1px;
-}
-
-.discover-page[data-design="cinema"] .discover-content {
-    padding-top: 8px;
-}
-
-.discover-page[data-design="aurora"] .discover-content {
-    padding-top: clamp(28px, 3.4vw, 52px);
-}
-
-.discover-page[data-design="editorial"] {
-    .discover-content {
-        padding-top: 8px;
-    }
-
-    .genre-section {
-        margin-bottom: calc(var(--dx-section-gap) * 1.1);
-    }
 }
 
 @media (max-width: 768px) {

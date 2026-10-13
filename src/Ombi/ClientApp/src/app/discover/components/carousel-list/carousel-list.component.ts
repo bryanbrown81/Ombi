@@ -40,8 +40,6 @@ export class CarouselListComponent {
     public id = input.required<string>();
     public isAdmin = input<boolean>(false);
     public title = input<string>("");
-    /** Editorial section number, e.g. "02". */
-    public index = input<string>("");
 
     // Output using new output() function
     public movieCount = output<number>();
@@ -272,7 +270,10 @@ export class CarouselListComponent {
                 approved: m.approved,
                 imdbid: m.imdbId,
                 denied: false,
-                background: m.backdropPath
+                background: m.backdropPath,
+                plexUrl: m.plexUrl,
+                embyUrl: m.embyUrl,
+                jellyfinUrl: m.jellyfinUrl
             });
         });
         return tempResults;
@@ -295,7 +296,10 @@ export class CarouselListComponent {
                 approved: m.approved || m.partlyAvailable,
                 imdbid: m.imdbId,
                 denied: false,
-                background: m.backdropPath
+                background: m.backdropPath,
+                plexUrl: m.plexUrl,
+                embyUrl: m.embyUrl,
+                jellyfinUrl: m.jellyfinUrl
             });
         });
         return tempResults;

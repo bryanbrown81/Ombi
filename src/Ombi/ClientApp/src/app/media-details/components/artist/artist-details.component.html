@@ -4,7 +4,7 @@
 
 <div *ngIf="artist" class="dark-theme">
 
-    <top-banner [title]="artist.name" [background]="getBackground()" [tagline]="artist.disambiguation"></top-banner>
+    <top-banner [title]="artist.name" [background]="getBackground()" [ambient]="artist.fanArt || artist.poster" [tagline]="artist.disambiguation"></top-banner>
 
     <section id="info-wrapper">
         <div class="small-middle-container">

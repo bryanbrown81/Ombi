@@ -23,6 +23,7 @@ import { JwtModule } from "@auth0/angular-jwt";
 import { NgxsModule } from '@ngxs/store';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { MatPaginatorIntl } from "@angular/material/paginator";
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from "@angular/material/form-field";
 import { MatPaginatorI18n } from "./app/localization/MatPaginatorI18n";
 import { TranslateService } from "@ngx-translate/core";
 import { APP_BASE_HREF, PlatformLocation } from "@angular/common";
@@ -227,6 +228,11 @@ bootstrapApplication(AppComponent, {
             provide: HTTP_INTERCEPTORS,
             useClass: UnauthorizedInterceptor,
             multi: true
+        },
+        {
+            // Aurora: every form field uses the outlined (glass) style unless it opts out.
+            provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+            useValue: { appearance: "outline" }
         },
         {
             provide: MatPaginatorIntl, 

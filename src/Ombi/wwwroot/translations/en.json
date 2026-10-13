@@ -460,25 +460,9 @@
         "PlaySlideshow": "Play slideshow",
         "PauseSlideshow": "Pause slideshow",
         "BrowseGenres": "Browse by genre",
-        "Designs": {
-            "Label": "Design",
-            "Cinema": "Cinema",
-            "Editorial": "Editorial",
-            "Aurora": "Aurora",
-            "Show": "Show design switcher",
-            "Hide": "Hide design switcher"
-        },
-        "Spotlight": {
-            "Morning": "Good morning",
-            "Afternoon": "Good afternoon",
-            "Evening": "Good evening",
-            "MorningNamed": "Good morning, {{name}}",
-            "AfternoonNamed": "Good afternoon, {{name}}",
-            "EveningNamed": "Good evening, {{name}}",
-            "Title": "What will you <em>watch</em> next?",
-            "Subtitle": "Search every movie and show, then request it in a single click.",
-            "Placeholder": "Search films, series, people…",
-            "Trending": "Trending now"
+        "Card": {
+            "OnServer": "On {{server}}",
+            "PartlyOnServer": "Partly on {{server}}"
         },
         "Search": {
             "Recent": "Recent searches",

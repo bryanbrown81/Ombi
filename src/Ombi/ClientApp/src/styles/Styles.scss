@@ -5,7 +5,8 @@
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat-core();
+// Inter across every Material component (the Aurora design typeface).
+@include mat-core(mat-typography-config($font-family: 'Inter, Roboto, "Helvetica Neue", sans-serif'));
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component

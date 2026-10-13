@@ -17,12 +17,12 @@
 }
 
 .recently-skeleton {
-    flex: 0 0 var(--dx-card-w);
+    flex: 0 0 var(--au-card-w);
     display: flex;
     flex-direction: column;
     gap: 8px;
 
-    .dx-skeleton-poster {
+    .au-skeleton-poster {
         flex: none;
         width: 100%;
     }

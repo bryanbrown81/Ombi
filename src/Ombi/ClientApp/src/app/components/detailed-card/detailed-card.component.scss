@@ -6,7 +6,7 @@
 .detailed-card {
     position: relative;
     width: 180px;
-    border-radius: var(--dx-card-radius, 8px);
+    border-radius: var(--au-card-radius, 8px);
     overflow: hidden;
     background: #1a2634;
     cursor: pointer;
@@ -216,13 +216,8 @@
     }
 }
 
-// Discover design variants
-:host-context(html[data-discover-design="editorial"]) .detailed-card {
-    background: #141415;
-    box-shadow: 0 0 0 1px rgba(244, 241, 234, 0.08);
-}
-
-:host-context(html[data-discover-design="aurora"]) .detailed-card {
+// Aurora glass surface
+.detailed-card {
     background: rgba(255, 255, 255, 0.06);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }

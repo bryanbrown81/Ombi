@@ -1,3 +1,51 @@
 ﻿.icon-spacing {
     padding-right: 5%;
 }
+
+// Aurora: the settings sections sit in one floating glass toolbar.
+:host {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+    width: fit-content;
+    max-width: calc(100% - 2 * var(--au-gutter));
+    margin: clamp(18px, 2.4vw, 32px) auto clamp(20px, 2.6vw, 36px);
+    padding: 6px;
+    border: 1px solid var(--au-glass-border);
+    border-radius: 22px;
+    background: var(--au-glass);
+    -webkit-backdrop-filter: var(--au-glass-blur);
+    backdrop-filter: var(--au-glass-blur);
+    box-shadow: var(--au-glass-highlight), 0 20px 50px -30px rgba(0, 0, 0, 0.9);
+}
+
+:host ::ng-deep > .mat-button {
+    padding: 0 16px;
+    color: var(--au-text-2);
+    font-size: 0.85rem;
+    line-height: 38px;
+
+    i {
+        margin-right: 8px;
+        color: var(--au-text-3);
+        transition: color 0.2s ease;
+    }
+
+    &:hover {
+        color: #fff;
+
+        i {
+            color: var(--au-accent);
+        }
+    }
+
+    &[aria-expanded="true"] {
+        background: linear-gradient(135deg, rgba(98, 210, 250, 0.2), rgba(139, 92, 246, 0.24));
+        color: #fff;
+
+        i {
+            color: var(--au-accent);
+        }
+    }
+}

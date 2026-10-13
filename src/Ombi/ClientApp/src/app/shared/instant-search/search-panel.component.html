@@ -1,5 +1,5 @@
 @let c = ctrl();
-<div class="sp" [class.sp--hero]="variant() === 'hero'" (mousedown)="keepFocus($event)">
+<div class="sp" (mousedown)="keepFocus($event)">
     @if (!c.term()) {
         @if (c.recents().length) {
             <div class="sp-head">
@@ -28,10 +28,10 @@
             <div class="sp-skeletons" aria-hidden="true">
                 @for (row of [1, 2, 3, 4]; track row) {
                     <div class="sp-skeleton-row" [style.--i]="row">
-                        <span class="dx-skeleton sp-skeleton-thumb"></span>
+                        <span class="au-skeleton sp-skeleton-thumb"></span>
                         <span class="sp-skeleton-lines">
-                            <span class="dx-skeleton sp-skeleton-line"></span>
-                            <span class="dx-skeleton sp-skeleton-line short"></span>
+                            <span class="au-skeleton sp-skeleton-line"></span>
+                            <span class="au-skeleton sp-skeleton-line short"></span>
                         </span>
                     </div>
                 }

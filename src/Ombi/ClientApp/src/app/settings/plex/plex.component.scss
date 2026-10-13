@@ -48,7 +48,7 @@
     background: transparent;
     box-shadow: 0 2px 12px 0 rgba(0,0,0,0.25);
     border-radius: 12px;
-    border: 1px solid #353a45;
+    border: 1px solid var(--au-glass-border);
 }
 
 .section-header {
@@ -69,7 +69,7 @@
     height: 100%;
     background: transparent;
     border-radius: 10px;
-    border: 1px solid #353a45;
+    border: 1px solid var(--au-glass-border);
     box-shadow: 0 1px 6px 0 rgba(0,0,0,0.18);
     color: #f1f3f6;
 }
@@ -112,7 +112,7 @@
     text-align: center;
     background: transparent;
     border-radius: 10px;
-    border: 1px solid #353a45;
+    border: 1px solid var(--au-glass-border);
     box-shadow: 0 1px 6px 0 rgba(0,0,0,0.18);
     color: #f1f3f6;
 }
@@ -134,7 +134,7 @@
     height: 32px;
     width: 32px;
     margin-bottom: 10px;
-    color: #90caf9;
+    color: var(--au-accent);
 }
 
 .sync-actions-grid {
@@ -150,7 +150,7 @@
     padding: 24px;
     color: #f1f3f6;
     background: transparent;
-    border: 1px solid #353a45;
+    border: 1px solid var(--au-glass-border);
     border-radius: 10px;
     font-weight: 500;
     box-shadow: 0 1px 6px 0 rgba(0,0,0,0.18);
@@ -161,14 +161,14 @@
     height: 32px;
     width: 32px;
     margin-bottom: 10px;
-    color: #90caf9;
+    color: var(--au-accent);
 }
 
 .credentials-card {
     padding: 24px;
     background: transparent;
     border-radius: 10px;
-    border: 1px solid #353a45;
+    border: 1px solid var(--au-glass-border);
     box-shadow: 0 1px 6px 0 rgba(0,0,0,0.18);
     color: #f1f3f6;
 }
@@ -218,27 +218,6 @@ mat-select {
     margin-top: 1rem;
 }
 
-.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
-    background-color: #90caf9 !important;
-}
-
-.mat-slide-toggle-thumb {
-    background-color: #2196f3 !important;
-}
-
-button[mat-flat-button], button[mat-raised-button], button[mat-stroked-button], button[mat-button] {
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    color: #f1f3f6;
-    background: #2196f3;
-    border-radius: 6px;
-    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.12);
-    transition: background 0.2s;
-}
-button[mat-flat-button]:hover, button[mat-raised-button]:hover, button[mat-stroked-button]:hover, button[mat-button]:hover {
-    background: #42a5f5;
-}
-
 @media (max-width: 1200px) {
     .main-content {
         grid-template-columns: 1fr;
@@ -268,9 +247,9 @@ button[mat-flat-button]:hover, button[mat-raised-button]:hover, button[mat-strok
 .info-banner {
     display: flex;
     align-items: center;
-    background: #23272f;
+    background: var(--au-glass);
     color: #e0e3ea;
-    border: 1px solid #1976d2;
+    border: 1px solid rgba(var(--au-accent-rgb), 0.35);
     box-shadow: 0 1px 6px 0 rgba(0,0,0,0.12);
     border-radius: 8px;
     padding: 16px 20px;
@@ -283,7 +262,7 @@ button[mat-flat-button]:hover, button[mat-raised-button]:hover, button[mat-strok
 
 .info-banner mat-icon {
     font-size: 28px;
-    color: #42a5f5;
+    color: var(--au-accent);
 }
 
 .info-banner button[mat-button] {

@@ -1,0 +1,10 @@
+<div class="ombi-ambient" [class.ombi-ambient--art]="hasArtwork()" aria-hidden="true">
+    @for (layer of layers(); track layer.id) {
+        <img class="ombi-ambient__img" [class.is-active]="isActive(layer)" [src]="layer.url" alt="" decoding="async"
+            (load)="onLoad(layer)">
+    }
+    <span class="ombi-ambient__blob ombi-ambient__blob--a"></span>
+    <span class="ombi-ambient__blob ombi-ambient__blob--b"></span>
+    <span class="ombi-ambient__blob ombi-ambient__blob--c"></span>
+    <span class="ombi-ambient__grain"></span>
+</div>

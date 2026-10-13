@@ -23,12 +23,12 @@
             <p class="results-count">{{ 'Discovery.Results.Count' | translate: { count: discoverResults().length } }}</p>
         } @else if (hasResults()) {
             <div class="results-toolbar">
-                <div class="dx-seg results-tabs" role="tablist" [attr.aria-label]="'Discovery.Results.FilterLabel' | translate"
+                <div class="au-seg results-tabs" role="tablist" [attr.aria-label]="'Discovery.Results.FilterLabel' | translate"
                     [style.--seg-count]="tabs().length" [style.--seg-index]="tabIndex()">
-                    <span class="dx-seg__indicator" aria-hidden="true"></span>
+                    <span class="au-seg__indicator" aria-hidden="true"></span>
                     @for (tab of tabs(); track tab.id) {
-                        <span class="dx-seg__cell" [class.filter-active]="effectiveTab() === tab.id">
-                            <button type="button" role="tab" class="dx-seg__btn"
+                        <span class="au-seg__cell" [class.filter-active]="effectiveTab() === tab.id">
+                            <button type="button" role="tab" class="au-seg__btn"
                                 [attr.aria-selected]="effectiveTab() === tab.id"
                                 (click)="selectTab(tab.id)">
                                 {{ tab.labelKey | translate }}<span class="results-tab-count">{{ tab.count }}</span>
@@ -44,7 +44,7 @@
         <div class="results-grid" aria-hidden="true">
             @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]; track item) {
                 <div class="results-cell results-skeleton" [style.--i]="item">
-                    <div class="dx-skeleton results-skeleton-poster"></div>
+                    <div class="au-skeleton results-skeleton-poster"></div>
                 </div>
             }
         </div>
@@ -64,7 +64,7 @@
             @if (loadingMore()) {
                 @for (item of [1, 2, 3, 4, 5, 6]; track item) {
                     <div class="results-cell results-skeleton" aria-hidden="true">
-                        <div class="dx-skeleton results-skeleton-poster"></div>
+                        <div class="au-skeleton results-skeleton-poster"></div>
                     </div>
                 }
             }

@@ -25,23 +25,23 @@ export class RevealDirective implements OnInit, OnDestroy {
             return;
         }
 
-        node.classList.add("dx-reveal");
-        node.style.setProperty("--dx-reveal-delay", `${this.revealDelay()}ms`);
+        node.classList.add("au-reveal");
+        node.style.setProperty("--au-reveal-delay", `${this.revealDelay()}ms`);
 
         this.observer = new IntersectionObserver(entries => {
             if (!entries.some(e => e.isIntersecting)) {
                 return;
             }
             this.observer?.disconnect();
-            node.classList.add("dx-reveal--in");
+            node.classList.add("au-reveal--in");
             // Drop the helper classes once settled so no transform lingers on the element.
             const settle = (event: TransitionEvent) => {
                 if (event.target !== node || event.propertyName !== "transform") {
                     return;
                 }
                 node.removeEventListener("transitionend", settle);
-                node.classList.remove("dx-reveal", "dx-reveal--in");
-                node.style.removeProperty("--dx-reveal-delay");
+                node.classList.remove("au-reveal", "au-reveal--in");
+                node.style.removeProperty("--au-reveal-delay");
             };
             node.addEventListener("transitionend", settle);
         }, { rootMargin: "0px 0px -6% 0px", threshold: 0.04 });

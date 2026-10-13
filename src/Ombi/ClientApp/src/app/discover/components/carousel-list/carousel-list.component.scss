@@ -4,8 +4,8 @@
 
 .carousel-rail {
     transition:
-        opacity 0.35s var(--dx-ease-out),
-        filter 0.35s var(--dx-ease-out);
+        opacity 0.35s var(--au-ease-out),
+        filter 0.35s var(--au-ease-out);
 
     &.is-switching {
         opacity: 0.35;
@@ -19,7 +19,7 @@
 }
 
 @media (max-width: 520px) {
-    .dx-section-actions {
+    .au-section-actions {
         width: 100%;
         margin-left: 0;
     }

@@ -1,0 +1,230 @@
+// Aurora layer for the details pages (movie, TV, artist).
+// Like media-details.component.scss this sheet is unencapsulated (the details components use
+// ViewEncapsulation.None), so it can style the shared top banner as well.
+
+// ─── Hero ────────────────────────────────────────────────
+.details-hero {
+    min-height: 600px;
+}
+
+// Fade the artwork into the ambient backdrop instead of ending on a hard edge.
+.hero-backdrop,
+.hero-backdrop-overlay {
+    -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+}
+
+.hero-backdrop-overlay {
+    background:
+        linear-gradient(90deg, rgba(var(--au-bg-rgb), 0.92) 0%, rgba(var(--au-bg-rgb), 0.7) 38%, rgba(var(--au-bg-rgb), 0.15) 100%),
+        radial-gradient(120% 90% at 75% 30%, transparent 40%, rgba(10, 8, 26, 0.45) 100%);
+}
+
+.hero-poster {
+    border-radius: var(--au-card-radius);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.18),
+        0 40px 80px -30px rgba(0, 0, 0, 0.95),
+        0 0 60px -20px rgba(139, 92, 246, 0.45);
+    transition: transform 0.6s var(--au-ease-out), box-shadow 0.6s var(--au-ease-out);
+
+    img {
+        border-radius: var(--au-card-radius);
+    }
+
+    &:hover {
+        transform: translate3d(0, -4px, 0) scale(1.02);
+    }
+}
+
+// Scoped under .details-hero to out-rank Material's `.mat-typography h1`, which otherwise
+// forces the title down to 24px / regular weight.
+.details-hero .hero-title {
+    margin: 0 0 10px;
+    padding-bottom: 0.06em;
+    font-size: clamp(2.1rem, 2.6vw + 1rem, 3.6rem);
+    font-weight: 750;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    background: linear-gradient(180deg, #fff 35%, rgba(255, 255, 255, 0.72));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    .hero-year {
+        -webkit-text-fill-color: rgba(255, 255, 255, 0.45);
+    }
+}
+
+.hero-tagline {
+    color: var(--au-text-2);
+}
+
+// ─── Meta badges and genres ──────────────────────────────
+.meta-badge {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04)), rgba(14, 10, 32, 0.4);
+    -webkit-backdrop-filter: blur(14px) saturate(170%);
+    backdrop-filter: blur(14px) saturate(170%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.meta-badge--accent {
+    border-color: rgba(29, 233, 182, 0.4);
+    background: linear-gradient(160deg, rgba(29, 233, 182, 0.24), rgba(29, 233, 182, 0.06)), rgba(14, 10, 32, 0.4);
+}
+
+.genre-tag {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: linear-gradient(135deg, rgba(98, 210, 250, 0.14), rgba(139, 92, 246, 0.14));
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.28);
+        background: linear-gradient(135deg, rgba(98, 210, 250, 0.24), rgba(139, 92, 246, 0.24));
+    }
+}
+
+.streaming-logo {
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+// ─── Actions ─────────────────────────────────────────────
+.action-btn {
+    padding: 11px 24px;
+    border-radius: 999px;
+    letter-spacing: 0.01em;
+    transition:
+        transform 0.3s var(--au-ease-out),
+        box-shadow 0.3s ease,
+        background-position 0.6s var(--au-ease-out),
+        filter 0.2s ease;
+
+    &:hover {
+        transform: translate3d(0, -2px, 0);
+    }
+}
+
+.action-btn--primary {
+    background: var(--au-gradient);
+    background-size: 160% 100%;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 16px 34px -14px rgba(139, 92, 246, 0.85);
+
+    &:hover {
+        background: var(--au-gradient);
+        background-size: 160% 100%;
+        background-position: 100% 50%;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.5),
+            0 20px 40px -14px rgba(244, 114, 182, 0.75);
+    }
+}
+
+.action-btn--secondary {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+
+    &:hover {
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08));
+    }
+}
+
+.action-btn--success,
+.action-btn--warning,
+.action-btn--danger,
+.action-btn--admin {
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+}
+
+// Play on the media server: the brand colour, solid, so it reads as the main action.
+.action-btn--viewon {
+    --server: var(--au-plex);
+    border: none;
+    background: linear-gradient(120deg, color-mix(in srgb, var(--server) 90%, #fff), var(--server));
+    color: #14100a;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.45),
+        0 16px 34px -14px color-mix(in srgb, var(--server) 85%, transparent);
+
+    &.plex,
+    &.emby,
+    &.jellyfin {
+        color: #14100a;
+
+        &:hover {
+            background: linear-gradient(120deg, color-mix(in srgb, var(--server) 90%, #fff), var(--server));
+            filter: brightness(1.08);
+        }
+    }
+
+    &.emby {
+        --server: var(--au-emby);
+        color: #fff;
+    }
+
+    &.jellyfin {
+        --server: var(--au-jellyfin);
+        color: #fff;
+    }
+}
+
+// ─── Content sections ────────────────────────────────────
+.section-title {
+    padding-left: 22px;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+
+    &::before {
+        top: 50%;
+        bottom: auto;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--au-aurora-1), var(--au-aurora-2));
+        box-shadow: 0 0 12px rgba(139, 92, 246, 0.9);
+        transform: translateY(-50%);
+    }
+}
+
+.details-overview {
+    color: var(--au-text-2);
+}
+
+.info-item {
+    padding: 18px;
+    border: 1px solid var(--au-glass-border);
+    border-radius: 18px;
+    background: var(--au-glass);
+    -webkit-backdrop-filter: var(--au-glass-blur);
+    backdrop-filter: var(--au-glass-blur);
+    box-shadow: var(--au-glass-highlight), 0 20px 40px -30px rgba(0, 0, 0, 0.9);
+    transition: transform 0.4s var(--au-ease-out), border-color 0.3s ease;
+
+    &:hover {
+        transform: translate3d(0, -2px, 0);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+.info-label {
+    color: var(--au-text-3);
+    letter-spacing: 0.12em;
+}
+
+.media-card img,
+.trailers-grid iframe {
+    border-radius: var(--au-card-radius);
+}
+
+.details-requests-panel .mat-expansion-panel {
+    border: 1px solid var(--au-glass-border);
+    background: var(--au-glass) !important;
+}

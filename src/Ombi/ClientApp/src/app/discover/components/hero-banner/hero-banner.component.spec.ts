@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { HeroBannerComponent, HERO_ROTATION_MS } from './hero-banner.component';
 import { SearchV2Service } from '../../../services';
+import { AmbientService } from '../../../shared/ambient/ambient.service';
 import { ISearchMovieResult, RequestType } from '../../../interfaces';
 
 function makeMovie(overrides: Partial<ISearchMovieResult> = {}): ISearchMovieResult {
@@ -42,10 +43,14 @@ function makeMovie(overrides: Partial<ISearchMovieResult> = {}): ISearchMovieRes
   } as ISearchMovieResult;
 }
 
+let ambient: AmbientService;
+
 function createComponent(mockSearchService: any) {
+  ambient = new AmbientService();
   const injector = Injector.create({
     providers: [
       { provide: SearchV2Service, useValue: mockSearchService },
+      { provide: AmbientService, useValue: ambient },
     ],
   });
 
@@ -302,6 +307,27 @@ describe('HeroBannerComponent', () => {
 
       // Should not throw
       expect(() => component.ngOnDestroy()).not.toThrow();
+    });
+  });
+
+  describe('ambient backdrop', () => {
+    it('tints the ambient with the active slide and follows selection', async () => {
+      mockSearchService.nowPlayingMoviesByPage.mockResolvedValue([
+        makeMovie({ id: 1, backdropPath: '/one.jpg' }),
+        makeMovie({ id: 2, backdropPath: '/two.jpg' }),
+      ]);
+      await component.ngOnInit();
+      expect(ambient.image()).toBe('https://image.tmdb.org/t/p/w300/one.jpg');
+
+      component.selectItem(1);
+      expect(ambient.image()).toBe('https://image.tmdb.org/t/p/w300/two.jpg');
+    });
+
+    it('releases the ambient when destroyed', async () => {
+      mockSearchService.nowPlayingMoviesByPage.mockResolvedValue([makeMovie({ id: 1, backdropPath: '/one.jpg' })]);
+      await component.ngOnInit();
+      component.ngOnDestroy();
+      expect(ambient.image()).toBeNull();
     });
   });
 

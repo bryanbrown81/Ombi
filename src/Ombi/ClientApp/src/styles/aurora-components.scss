@@ -1,0 +1,1060 @@
+// ─── Aurora: framework component theme ───────────────────
+// Restyles Angular Material (v14 legacy components), Bootstrap 4 and PrimeNG so every page
+// shares the Aurora look. Loaded last (see angular.json) so it layers over the vendor CSS.
+//
+// Material injects its structural component styles at runtime, after this sheet, so rules
+// that override structural properties (radius, padding) are prefixed with `body` to win on
+// specificity rather than order.
+
+@mixin glass($strong: false, $radius: var(--au-panel-radius)) {
+    border: 1px solid var(--au-glass-border);
+    border-radius: $radius;
+    @if $strong {
+        background: var(--au-glass-strong);
+    } @else {
+        background: var(--au-glass);
+    }
+    -webkit-backdrop-filter: var(--au-glass-blur);
+    backdrop-filter: var(--au-glass-blur);
+    box-shadow: var(--au-glass-highlight), var(--au-shadow);
+    color: var(--au-text);
+}
+
+@mixin gradient-fill {
+    background-color: transparent;
+    background-image: var(--au-gradient);
+    background-size: 160% 100%;
+    background-position: 0% 50%;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        0 12px 26px -12px rgba(139, 92, 246, 0.8);
+}
+
+// ═══ Base ════════════════════════════════════════════════
+html,
+body {
+    background: var(--au-bg);
+    color: var(--au-text);
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: var(--au-font);
+}
+
+::selection {
+    background: rgba(139, 92, 246, 0.45);
+    color: #fff;
+}
+
+// The ambient backdrop shows through the app chrome.
+body .mat-sidenav-container,
+body .mat-drawer-container {
+    background: transparent;
+    color: var(--au-text);
+}
+
+a {
+    color: var(--au-accent);
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: #a5e6ff;
+    }
+}
+
+body hr {
+    border-top: 1px solid var(--au-hairline);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    background-clip: padding-box;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.28);
+    }
+}
+
+// ═══ Settings-style forms (fieldset + legend) ════════════
+body fieldset {
+    position: relative;
+    min-width: 0;
+    margin: 0 0 28px;
+    padding: 26px clamp(18px, 2.4vw, 34px) 24px;
+    @include glass;
+}
+
+body legend {
+    float: left;
+    width: 100%;
+    margin: 0 0 20px;
+    padding: 0;
+    font-family: var(--au-font);
+    font-size: clamp(1.25rem, 0.6vw + 1rem, 1.6rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #fff;
+
+    + * {
+        clear: both;
+    }
+}
+
+// ═══ Setup wizard ════════════════════════════════════════
+body .wizard-background {
+    background: transparent;
+}
+
+body .wizard-inner {
+    padding: clamp(20px, 3vw, 40px);
+    @include glass($radius: 28px);
+}
+
+// ═══ Angular Material ════════════════════════════════════
+// ─── Surfaces ────────────────────────────────────────────
+body .mat-card,
+body .mat-card:not([class*="mat-elevation-z"]) {
+    padding: 22px;
+    @include glass;
+}
+
+body .mat-card-title {
+    font-weight: 700;
+    letter-spacing: -0.015em;
+}
+
+body .mat-card-subtitle {
+    color: var(--au-text-3);
+}
+
+body .mat-expansion-panel,
+body .mat-expansion-panel:not([class*="mat-elevation-z"]) {
+    @include glass($radius: 18px);
+    box-shadow: var(--au-glass-highlight), 0 18px 40px -30px rgba(0, 0, 0, 0.9);
+}
+
+body .mat-accordion .mat-expansion-panel {
+    margin-bottom: 10px;
+    border-radius: 18px !important;
+}
+
+body .mat-expansion-panel-header {
+    font-family: var(--au-font);
+
+    &:hover:not([aria-disabled="true"]) {
+        background: rgba(255, 255, 255, 0.04) !important;
+    }
+}
+
+body .mat-expansion-panel-header-title {
+    color: #fff;
+    font-weight: 600;
+}
+
+body .mat-expansion-panel-header-description,
+body .mat-expansion-indicator::after {
+    color: var(--au-text-3);
+}
+
+// ─── Overlays: dialogs, menus, selects, autocomplete ─────
+body .cdk-overlay-dark-backdrop {
+    background: rgba(4, 6, 14, 0.62);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+body .mat-dialog-container {
+    padding: 28px;
+    @include glass($strong: true, $radius: 26px);
+    box-shadow:
+        var(--au-glass-highlight),
+        0 40px 100px -30px rgba(0, 0, 0, 0.95),
+        0 0 80px -40px rgba(139, 92, 246, 0.6);
+}
+
+body .mat-dialog-title {
+    font-family: var(--au-font);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+body .mat-menu-panel,
+body .mat-select-panel,
+body .mat-autocomplete-panel,
+body .mat-datepicker-content {
+    @include glass($strong: true, $radius: 16px);
+    box-shadow:
+        var(--au-glass-highlight),
+        0 30px 70px -24px rgba(0, 0, 0, 0.95);
+}
+
+body .mat-menu-content:not(:empty),
+body .mat-select-panel,
+body .mat-autocomplete-panel {
+    padding: 6px;
+}
+
+body .mat-menu-item,
+body .mat-option {
+    border-radius: 10px;
+    color: var(--au-text);
+    font-family: var(--au-font);
+    font-size: 0.9rem;
+
+    .fas,
+    .far,
+    .fab,
+    .mat-icon {
+        color: var(--au-text-3);
+    }
+}
+
+body .mat-menu-item:hover:not([disabled]),
+body .mat-menu-item.cdk-program-focused,
+body .mat-menu-item.cdk-keyboard-focused,
+body .mat-option:hover:not(.mat-option-disabled),
+body .mat-option.mat-active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
+    background: linear-gradient(90deg, rgba(98, 210, 250, 0.18), rgba(139, 92, 246, 0.2));
+    color: #fff;
+}
+
+// ─── Form fields ─────────────────────────────────────────
+body .mat-form-field {
+    font-family: var(--au-font);
+}
+
+body .mat-form-field-appearance-outline {
+    .mat-form-field-outline {
+        color: rgba(255, 255, 255, 0.16);
+    }
+
+    .mat-form-field-outline-thick {
+        color: rgba(255, 255, 255, 0.34);
+    }
+
+    .mat-form-field-outline-start,
+    .mat-form-field-outline-gap,
+    .mat-form-field-outline-end {
+        background: rgba(255, 255, 255, 0.035);
+        transition: background-color 0.2s ease;
+    }
+
+    .mat-form-field-outline-start {
+        min-width: var(--au-field-radius);
+        border-radius: var(--au-field-radius) 0 0 var(--au-field-radius);
+    }
+
+    .mat-form-field-outline-end {
+        border-radius: 0 var(--au-field-radius) var(--au-field-radius) 0;
+    }
+
+    &.mat-focused {
+        .mat-form-field-outline-thick {
+            color: var(--au-accent);
+        }
+
+        .mat-form-field-outline-start,
+        .mat-form-field-outline-gap,
+        .mat-form-field-outline-end {
+            background: rgba(var(--au-accent-rgb), 0.05);
+        }
+    }
+
+    &.mat-form-field-invalid .mat-form-field-outline-thick {
+        color: #ff6b6b;
+    }
+}
+
+body .mat-form-field-appearance-fill .mat-form-field-flex {
+    border-radius: var(--au-field-radius) var(--au-field-radius) 0 0;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body .mat-form-field-appearance-legacy .mat-form-field-underline,
+body .mat-form-field-appearance-fill .mat-form-field-underline::before {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+body .mat-form-field-ripple {
+    background-image: var(--au-gradient);
+}
+
+body .mat-form-field-label {
+    color: var(--au-text-3);
+}
+
+body .mat-form-field.mat-focused .mat-form-field-label {
+    color: var(--au-accent);
+}
+
+body .mat-form-field.mat-form-field-invalid .mat-form-field-label {
+    color: #ff8a8a;
+}
+
+body .mat-input-element {
+    color: var(--au-text);
+    caret-color: var(--au-accent);
+
+    &::placeholder {
+        color: var(--au-text-3);
+    }
+}
+
+body .mat-hint {
+    color: var(--au-text-3);
+}
+
+body .mat-error {
+    color: #ff8a8a;
+}
+
+body .mat-select-value {
+    color: var(--au-text);
+}
+
+// Some templates use a bare <mat-select> outside a form field; frame it like one.
+body .mat-select:where(:not(.mat-form-field-infix .mat-select):not(.mat-paginator .mat-select)) {
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--au-field-radius);
+    background: rgba(255, 255, 255, 0.035);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.34);
+    }
+
+    &[aria-expanded="true"],
+    &:focus-visible {
+        border-color: var(--au-accent);
+        background: rgba(var(--au-accent-rgb), 0.05);
+        outline: none;
+    }
+}
+
+body .mat-select-arrow,
+body .mat-form-field.mat-focused .mat-select-arrow {
+    color: var(--au-text-3);
+}
+
+// ─── Buttons ─────────────────────────────────────────────
+body .mat-button,
+body .mat-raised-button,
+body .mat-stroked-button,
+body .mat-flat-button {
+    border-radius: var(--au-control-radius);
+    font-family: var(--au-font);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 0 20px;
+    line-height: 38px;
+    transition:
+        transform 0.25s var(--au-ease-out),
+        box-shadow 0.25s ease,
+        background-color 0.2s ease,
+        background-position 0.6s var(--au-ease-out),
+        filter 0.2s ease;
+}
+
+body .mat-raised-button,
+body .mat-flat-button,
+body .mat-raised-button:not([class*="mat-elevation-z"]) {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--au-text);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+        0 10px 24px -16px rgba(0, 0, 0, 0.8);
+}
+
+body .mat-raised-button:not([disabled]):hover,
+body .mat-flat-button:not([disabled]):hover {
+    background-color: rgba(255, 255, 255, 0.16);
+    transform: translate3d(0, -1px, 0);
+}
+
+body .mat-raised-button.mat-accent,
+body .mat-flat-button.mat-accent,
+body .mat-raised-button.mat-primary,
+body .mat-flat-button.mat-primary,
+body .mat-fab.mat-accent,
+body .mat-mini-fab.mat-accent {
+    @include gradient-fill;
+
+    &:not([disabled]):hover {
+        background-position: 100% 50%;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.45),
+            0 16px 32px -12px rgba(244, 114, 182, 0.7);
+    }
+}
+
+body .mat-raised-button.mat-warn,
+body .mat-flat-button.mat-warn {
+    background-color: transparent;
+    background-image: linear-gradient(120deg, #ff7a7a, #e5484d);
+    color: #fff;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 12px 26px -12px rgba(229, 72, 77, 0.8);
+}
+
+// Some templates add `mat-stroked-button` as a class on raised buttons; those stay raised.
+body .mat-stroked-button:where(:not(.mat-raised-button):not(.mat-button-disabled)) {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+body .mat-stroked-button:where(:not(.mat-raised-button)) {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--au-text);
+
+    &:not([disabled]):hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    &.mat-accent,
+    &.mat-primary {
+        color: var(--au-accent);
+        border-color: rgba(var(--au-accent-rgb), 0.45);
+    }
+
+    &.mat-warn {
+        color: #ff8a8a;
+        border-color: rgba(239, 83, 80, 0.5);
+    }
+}
+
+// :where() keeps these exclusions from raising specificity above page-level button styles.
+body .mat-button.mat-accent:where(:not(.mat-raised-button):not(.mat-flat-button)),
+body .mat-button.mat-primary:where(:not(.mat-raised-button):not(.mat-flat-button)),
+body .mat-icon-button.mat-accent {
+    color: var(--au-accent);
+}
+
+body .mat-button[disabled],
+body .mat-raised-button[disabled],
+body .mat-flat-button[disabled],
+body .mat-stroked-button[disabled] {
+    background-image: none;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.35);
+    box-shadow: none;
+    text-shadow: none;
+}
+
+body .mat-button-focus-overlay {
+    border-radius: inherit;
+}
+
+// ─── Toggles, checkboxes, radios ─────────────────────────
+body .mat-slide-toggle {
+    .mat-slide-toggle-bar {
+        background-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .mat-slide-toggle-thumb {
+        background-color: #dfe3ee;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+    }
+
+    &.mat-checked {
+        .mat-slide-toggle-bar {
+            background-color: transparent;
+            background-image: var(--au-gradient);
+            box-shadow: 0 0 14px -2px rgba(139, 92, 246, 0.7);
+        }
+
+        .mat-slide-toggle-thumb {
+            background-color: #fff;
+        }
+    }
+
+    .mat-slide-toggle-content {
+        color: var(--au-text-2);
+        font-family: var(--au-font);
+    }
+}
+
+body .mat-checkbox-frame {
+    border-color: rgba(255, 255, 255, 0.35);
+    border-radius: 6px;
+}
+
+body .mat-checkbox-background {
+    border-radius: 6px;
+}
+
+body .mat-checkbox-checked .mat-checkbox-background,
+body .mat-checkbox-indeterminate .mat-checkbox-background {
+    background-color: transparent;
+    background-image: var(--au-gradient);
+}
+
+body .mat-checkbox-layout .mat-checkbox-label {
+    color: var(--au-text-2);
+}
+
+body .mat-radio-outer-circle {
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+body .mat-radio-button.mat-radio-checked .mat-radio-outer-circle {
+    border-color: var(--au-accent);
+}
+
+body .mat-radio-button .mat-radio-inner-circle {
+    background-color: var(--au-accent);
+}
+
+// ─── Tabs ────────────────────────────────────────────────
+body .mat-tab-header,
+body .mat-tab-nav-bar {
+    border-bottom: 1px solid var(--au-hairline);
+}
+
+body .mat-tab-label,
+body .mat-tab-link {
+    min-width: auto;
+    height: 52px;
+    padding: 0 20px;
+    opacity: 1;
+    color: var(--au-text-3);
+    font-family: var(--au-font);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: var(--au-text-2);
+    }
+}
+
+body .mat-tab-label-active,
+body .mat-tab-link-active {
+    color: var(--au-text);
+}
+
+body .mat-ink-bar {
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background-image: var(--au-gradient);
+}
+
+body .mat-tab-group,
+body .mat-tab-body-wrapper {
+    font-family: var(--au-font);
+}
+
+// ─── Tables ──────────────────────────────────────────────
+body .mat-table {
+    overflow: hidden;
+    border-radius: 18px;
+    background: var(--au-glass);
+    box-shadow:
+        inset 0 0 0 1px var(--au-glass-border),
+        var(--au-shadow);
+    font-family: var(--au-font);
+}
+
+// Material gives rows and sticky cells `background: inherit`, which would repaint the table's
+// glass gradient on every row; only the table paints its surface.
+body .mat-table thead,
+body .mat-table tbody,
+body .mat-table tfoot,
+body .mat-table [mat-header-row],
+body .mat-table [mat-row],
+body .mat-table [mat-footer-row],
+body mat-header-row,
+body mat-row {
+    background: transparent;
+}
+
+// Sticky headers float over scrolled rows, so they need their own frosted fill.
+body .mat-table .mat-table-sticky {
+    background: rgba(18, 20, 38, 0.9);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+}
+
+body .mat-table th.mat-table-sticky:first-child {
+    border-top-left-radius: 18px;
+}
+
+body .mat-table th.mat-table-sticky:last-child {
+    border-top-right-radius: 18px;
+}
+
+// Bootstrap's `.table` (often combined with mat-table) top-aligns cells.
+body .mat-table td,
+body .mat-table th {
+    vertical-align: middle;
+}
+
+body .mat-header-cell {
+    color: var(--au-text-3);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+body .mat-cell,
+body .mat-footer-cell {
+    color: var(--au-text-2);
+}
+
+body .mat-cell,
+body .mat-header-cell,
+body .mat-footer-cell,
+body .mat-row,
+body .mat-header-row,
+body .mat-footer-row {
+    // Also covers div-based ".mat-row" layouts, which Material's element-only theme rules miss.
+    border-bottom-color: var(--au-hairline);
+}
+
+body tr.mat-row:hover .mat-cell,
+body .mat-row:hover {
+    background: rgba(255, 255, 255, 0.035);
+}
+
+body .mat-paginator {
+    background: transparent;
+    color: var(--au-text-2);
+    font-family: var(--au-font);
+}
+
+body .mat-sort-header-arrow {
+    color: var(--au-text-3);
+}
+
+// ─── Chips ───────────────────────────────────────────────
+body .mat-chip.mat-standard-chip {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--au-text);
+    font-family: var(--au-font);
+    font-weight: 500;
+
+    &.mat-chip-selected.mat-accent,
+    &.mat-chip-selected.mat-primary {
+        border-color: transparent;
+        @include gradient-fill;
+    }
+
+    .mat-chip-remove {
+        color: var(--au-text-2);
+        opacity: 0.8;
+    }
+}
+
+// ─── Stepper (wizard) ────────────────────────────────────
+body .mat-stepper-horizontal,
+body .mat-stepper-vertical {
+    background: transparent;
+    font-family: var(--au-font);
+}
+
+body .mat-step-header .mat-step-icon,
+body .mat-step-header .mat-step-icon-selected,
+body .mat-step-header .mat-step-icon-state-done,
+body .mat-step-header .mat-step-icon-state-edit {
+    background-color: transparent;
+    background-image: var(--au-gradient);
+    color: #fff;
+}
+
+body .mat-step-header .mat-step-label {
+    color: var(--au-text-3);
+}
+
+body .mat-step-header .mat-step-label.mat-step-label-active,
+body .mat-step-header .mat-step-label.mat-step-label-selected {
+    color: var(--au-text);
+}
+
+body .mat-step-header:hover:not([aria-disabled]),
+body .mat-step-header.cdk-keyboard-focused {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+}
+
+body .mat-stepper-horizontal-line,
+body .mat-horizontal-stepper-header::before,
+body .mat-horizontal-stepper-header::after,
+body .mat-stepper-vertical-line::before {
+    border-color: var(--au-hairline);
+}
+
+// ─── Feedback ────────────────────────────────────────────
+body .mat-snack-bar-container {
+    @include glass($strong: true, $radius: 14px);
+    font-family: var(--au-font);
+}
+
+body .mat-simple-snackbar-action {
+    color: var(--au-accent);
+}
+
+body .mat-tooltip {
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(14, 16, 30, 0.94);
+    font-family: var(--au-font);
+    font-size: 0.75rem;
+    line-height: 1.45;
+}
+
+body .mat-progress-bar-buffer {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+body .mat-progress-bar-fill::after {
+    background-color: transparent;
+    background-image: var(--au-gradient);
+}
+
+body .mat-progress-spinner[class] circle,
+body .mat-spinner[class] circle {
+    stroke: var(--au-accent);
+}
+
+body .mat-divider {
+    border-top-color: var(--au-hairline);
+}
+
+body .mat-list-base .mat-list-item,
+body .mat-list-base .mat-list-option {
+    color: var(--au-text);
+    font-family: var(--au-font);
+}
+
+// ═══ Bootstrap 4 ═════════════════════════════════════════
+body .btn {
+    border: 1px solid transparent;
+    border-radius: var(--au-control-radius);
+    font-family: var(--au-font);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition:
+        transform 0.25s var(--au-ease-out),
+        box-shadow 0.25s ease,
+        background-color 0.2s ease,
+        background-position 0.6s var(--au-ease-out),
+        filter 0.2s ease;
+
+    &:not(:disabled):not(.disabled):hover {
+        transform: translate3d(0, -1px, 0);
+        filter: brightness(1.06);
+    }
+
+    &:focus,
+    &.focus {
+        box-shadow: 0 0 0 3px rgba(var(--au-accent-rgb), 0.3);
+    }
+}
+
+body .btn-primary {
+    border-color: transparent;
+    @include gradient-fill;
+
+    &:not(:disabled):not(.disabled):hover {
+        background-position: 100% 50%;
+        border-color: transparent;
+        color: #fff;
+    }
+}
+
+body .btn-success {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: linear-gradient(120deg, #34f5c5, #10b981);
+    color: #04261d;
+}
+
+body .btn-danger {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: linear-gradient(120deg, #ff7a7a, #e5484d);
+    color: #fff;
+}
+
+body .btn-warning {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: linear-gradient(120deg, #ffd166, #f59e0b);
+    color: #2a1a00;
+}
+
+body .btn-info {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: linear-gradient(120deg, #7dd9fb, #3b82f6);
+    color: #fff;
+}
+
+body .btn-secondary,
+body .btn-default,
+body .btn-light,
+body .btn-dark {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--au-text);
+
+    &:not(:disabled):not(.disabled):hover {
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+    }
+}
+
+body .btn-link {
+    color: var(--au-accent);
+}
+
+body .form-control,
+body .custom-select,
+body .input-group-text {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--au-text);
+    font-family: var(--au-font);
+
+    &::placeholder {
+        color: var(--au-text-3);
+    }
+}
+
+body .form-control:focus,
+body .custom-select:focus {
+    border-color: var(--au-accent);
+    background-color: rgba(var(--au-accent-rgb), 0.06);
+    color: var(--au-text);
+    box-shadow: 0 0 0 4px rgba(var(--au-accent-rgb), 0.14);
+}
+
+body .form-control:disabled,
+body .form-control[readonly] {
+    background-color: rgba(255, 255, 255, 0.025);
+    color: var(--au-text-2);
+}
+
+body .card {
+    @include glass($radius: 18px);
+}
+
+body .card-header,
+body .card-footer {
+    border-color: var(--au-hairline);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+body .table {
+    color: var(--au-text-2);
+
+    th,
+    td {
+        border-color: var(--au-hairline);
+    }
+
+    thead th {
+        border-bottom: 1px solid var(--au-hairline);
+        color: var(--au-text-3);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+}
+
+body .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.025);
+}
+
+body .table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--au-text);
+}
+
+body .badge {
+    padding: 0.38em 0.75em;
+    border-radius: 999px;
+    font-family: var(--au-font);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+body .alert {
+    @include glass($radius: 14px);
+    border-left-width: 3px;
+}
+
+body .alert-success {
+    border-left-color: var(--au-status-available);
+}
+
+body .alert-warning {
+    border-left-color: var(--au-status-approved);
+}
+
+body .alert-danger {
+    border-left-color: var(--au-status-denied);
+}
+
+body .alert-info,
+body .alert-primary {
+    border-left-color: var(--au-accent);
+}
+
+body .nav-tabs {
+    border-bottom-color: var(--au-hairline);
+
+    .nav-link {
+        border: none;
+        border-bottom: 2px solid transparent;
+        background: transparent;
+        color: var(--au-text-3);
+
+        &:hover {
+            color: var(--au-text-2);
+        }
+
+        &.active {
+            border-bottom-color: var(--au-accent);
+            background: transparent;
+            color: var(--au-text);
+        }
+    }
+}
+
+body .list-group-item {
+    border-color: var(--au-hairline);
+    background: transparent;
+    color: var(--au-text);
+}
+
+body .text-muted {
+    color: var(--au-text-3) !important;
+}
+
+body .modal-content {
+    @include glass($strong: true, $radius: 24px);
+}
+
+// ═══ PrimeNG ═════════════════════════════════════════════
+body .p-component {
+    font-family: var(--au-font);
+}
+
+body .p-dialog {
+    overflow: hidden;
+    @include glass($strong: true, $radius: 24px);
+
+    .p-dialog-header,
+    .p-dialog-content,
+    .p-dialog-footer {
+        background: transparent;
+        color: var(--au-text);
+    }
+
+    .p-dialog-header {
+        border-bottom: 1px solid var(--au-hairline);
+    }
+}
+
+body .p-sidebar {
+    @include glass($strong: true, $radius: 0);
+}
+
+body .p-paginator {
+    border: none;
+    background: transparent;
+    color: var(--au-text-2);
+
+    .p-paginator-page,
+    .p-paginator-first,
+    .p-paginator-prev,
+    .p-paginator-next,
+    .p-paginator-last {
+        border-radius: 10px;
+        color: var(--au-text-2);
+    }
+
+    .p-paginator-page.p-highlight {
+        @include gradient-fill;
+    }
+}
+
+body .p-inputtext {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--au-text);
+
+    &:enabled:focus {
+        border-color: var(--au-accent);
+        box-shadow: 0 0 0 4px rgba(var(--au-accent-rgb), 0.14);
+    }
+}
+
+body .p-autocomplete-panel,
+body .p-datepicker:not(.p-datepicker-inline),
+body .p-overlaypanel {
+    @include glass($strong: true, $radius: 16px);
+}
+
+body .p-datepicker {
+    background: var(--au-glass-strong);
+    color: var(--au-text);
+
+    .p-datepicker-header {
+        border-bottom-color: var(--au-hairline);
+        background: transparent;
+        color: var(--au-text);
+    }
+
+    table td > span.p-highlight {
+        @include gradient-fill;
+    }
+}
+
+body .p-tooltip .p-tooltip-text {
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(14, 16, 30, 0.94);
+    font-family: var(--au-font);
+    font-size: 0.75rem;
+}
+
+body .p-carousel .p-carousel-content .p-carousel-prev,
+body .p-carousel .p-carousel-content .p-carousel-next {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06));
+    color: #fff;
+}
+
+body .p-skeleton {
+    border-radius: var(--au-card-radius);
+    background: rgba(255, 255, 255, 0.05);
+}

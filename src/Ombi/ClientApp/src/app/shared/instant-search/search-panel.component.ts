@@ -18,7 +18,6 @@ import { INSTANT_SEARCH_MIN_CHARS, InstantSearchController } from "./instant-sea
 })
 export class SearchPanelComponent {
     public readonly ctrl = input.required<InstantSearchController>();
-    public readonly variant = input<"nav" | "hero">("nav");
     public readonly minChars = INSTANT_SEARCH_MIN_CHARS;
     public readonly isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent || "");
 

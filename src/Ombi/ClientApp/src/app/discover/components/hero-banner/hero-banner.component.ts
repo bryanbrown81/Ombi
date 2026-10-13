@@ -1,4 +1,4 @@
-import { Component, inject, input, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from "@angular/core";
+import { Component, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
 import { TranslateModule } from "@ngx-translate/core";
@@ -6,6 +6,7 @@ import { TranslateModule } from "@ngx-translate/core";
 import { SearchV2Service } from "../../../services";
 import { RequestType } from "../../../interfaces";
 import { TiltDirective } from "../../directives/tilt.directive";
+import { AmbientService } from "../../../shared/ambient/ambient.service";
 import { prefersReducedMotion } from "../../directives/reveal.directive";
 
 export interface IHeroBannerItem {
@@ -19,8 +20,6 @@ export interface IHeroBannerItem {
     year: string;
 }
 
-export type HeroVariant = "cinema" | "aurora";
-
 export const HERO_ROTATION_MS = 8000;
 const TMDB_IMAGE = "https://image.tmdb.org/t/p";
 const SWIPE_THRESHOLD_PX = 48;
@@ -29,7 +28,7 @@ const SWIPE_THRESHOLD_PX = 48;
     standalone: true,
     selector: "discover-hero-banner",
     templateUrl: "./hero-banner.component.html",
-    styleUrls: ["./hero-banner.component.scss", "./hero-banner.cinema.scss", "./hero-banner.aurora.scss", "./hero-banner.ambient.scss"],
+    styleUrls: ["./hero-banner.component.scss", "./hero-banner.stage.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
@@ -40,8 +39,8 @@ const SWIPE_THRESHOLD_PX = 48;
 })
 export class HeroBannerComponent implements OnInit, OnDestroy {
     private readonly searchService = inject(SearchV2Service);
+    private readonly ambient = inject(AmbientService);
 
-    public readonly variant = input<HeroVariant>("cinema");
     public readonly rotationMs = HERO_ROTATION_MS;
 
     public items = signal<IHeroBannerItem[]>([]);
@@ -100,6 +99,7 @@ export class HeroBannerComponent implements OnInit, OnDestroy {
             this.items.set(bannerItems);
             this.loaded.set(true);
             this.failed.set(bannerItems.length === 0);
+            this.syncAmbient();
 
             if (bannerItems.length > 1) {
                 if (!prefersReducedMotion()) {
@@ -119,6 +119,7 @@ export class HeroBannerComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.stopRotation();
+        this.ambient.release(this);
         if (typeof document !== "undefined") {
             document.removeEventListener("visibilitychange", this.onVisibilityChange);
         }
@@ -131,6 +132,7 @@ export class HeroBannerComponent implements OnInit, OnDestroy {
         }
         this.previousIndex.set(this.activeIndex());
         this.activeIndex.set(index);
+        this.syncAmbient();
         // Every slide gets a full interval, measured from when it appeared.
         this.startRotation();
     }
@@ -240,6 +242,12 @@ export class HeroBannerComponent implements OnInit, OnDestroy {
         const item = this.activeItem();
         if (!item) return '';
         return (Math.round(item.rating * 10) / 10).toString();
+    }
+
+    /** Tints the app-wide ambient backdrop with the active slide's artwork. */
+    private syncAmbient(): void {
+        const item = this.activeItem();
+        this.ambient.set(this, item ? this.thumbFor(item) : null);
     }
 
     /** Starts a fresh interval for the current slide. */

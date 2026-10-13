@@ -44,8 +44,6 @@ export class RecentlyRequestedListComponent implements OnInit, OnDestroy {
     @Input() public id: string;
     @Input() public isAdmin: boolean;
     public readonly title = input<string>("");
-    /** Editorial section number, e.g. "01". */
-    public readonly index = input<string>("");
     /** Emits once loaded: true when there is at least one request to show. */
     public readonly hasItems = output<boolean>();
 

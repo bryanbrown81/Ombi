@@ -1,0 +1,6 @@
+// The app sits above the fixed Aurora ambient backdrop (<ombi-ambient>, z-index 0).
+.app-shell {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+}

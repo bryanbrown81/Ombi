@@ -19,10 +19,10 @@
         0 0 0 1px rgba(0, 0, 0, 0.35),
         0 34px 80px -24px rgba(0, 0, 0, 0.9);
     color: #fff;
-    font-family: var(--dx-font);
+    font-family: var(--au-font);
     text-align: left;
     transform-origin: top center;
-    animation: dx-pop 0.28s var(--dx-ease-out);
+    animation: au-pop 0.28s var(--au-ease-out);
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
 }
@@ -62,10 +62,10 @@
 .sp-loader {
     width: 14px;
     height: 14px;
-    border: 2px solid rgba(var(--dx-accent-rgb), 0.9);
+    border: 2px solid rgba(var(--au-accent-rgb), 0.9);
     border-right-color: transparent;
     border-radius: 50%;
-    animation: dx-spin 0.7s linear infinite;
+    animation: au-spin 0.7s linear infinite;
 }
 
 .sp-hint {
@@ -88,8 +88,8 @@
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    background: rgba(var(--dx-accent-rgb), 0.12);
-    color: var(--dx-accent);
+    background: rgba(var(--au-accent-rgb), 0.12);
+    color: var(--au-accent);
 }
 
 .sp-hint-title {
@@ -143,7 +143,7 @@
 }
 
 .sp-option--result {
-    animation: dx-pop 0.35s var(--dx-ease-out) backwards;
+    animation: au-pop 0.35s var(--au-ease-out) backwards;
     animation-delay: calc(var(--i, 0) * 24ms);
 }
 
@@ -248,7 +248,7 @@
     font-size: 0.72rem;
     opacity: 0;
     transform: translateX(-4px);
-    transition: opacity 0.15s ease, transform 0.2s var(--dx-ease-out);
+    transition: opacity 0.15s ease, transform 0.2s var(--au-ease-out);
 }
 
 .sp-option.is-active .sp-enter {
@@ -287,7 +287,7 @@
     align-items: center;
     gap: 12px;
     padding: 7px 10px;
-    animation: dx-fade 0.4s ease backwards;
+    animation: au-fade 0.4s ease backwards;
     animation-delay: calc(var(--i, 0) * 60ms);
 }
 
@@ -338,25 +338,9 @@
         background: rgba(255, 255, 255, 0.06);
         box-shadow: none;
         color: rgba(255, 255, 255, 0.72);
-        font-family: var(--dx-font);
+        font-family: var(--au-font);
         font-size: 0.62rem;
         font-weight: 600;
-    }
-}
-
-// ─── Hero size ───────────────────────────────────────────
-.sp--hero {
-    padding: 10px;
-    border-radius: 22px;
-
-    .sp-thumb,
-    .sp-skeleton-thumb {
-        width: 46px;
-        height: 69px;
-    }
-
-    .sp-option-title {
-        font-size: 1rem;
     }
 }
 

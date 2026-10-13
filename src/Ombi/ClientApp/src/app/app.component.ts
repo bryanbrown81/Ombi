@@ -15,6 +15,7 @@ import { SignalRNotificationService } from './services/signlarnotification.servi
 import { DOCUMENT } from '@angular/common';
 import { CustomizationFacade } from './state/customization';
 import { MyNavComponent } from './my-nav/my-nav.component';
+import { AmbientComponent } from './shared/ambient/ambient.component';
 
 @Component({
     standalone: true,
@@ -25,7 +26,8 @@ import { MyNavComponent } from './my-nav/my-nav.component';
         CommonModule,
         RouterModule,
         TranslateModule,
-        MyNavComponent
+        MyNavComponent,
+        AmbientComponent
     ]
 })
 export class AppComponent implements OnInit {

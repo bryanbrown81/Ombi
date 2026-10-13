@@ -9,6 +9,12 @@
     font-family: Montserrat,sans-serif;
     text-transform: uppercase;
     color: #62d2fa;
+    // Aurora gradient wordmark
+    background: var(--au-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 8px 28px rgba(139, 92, 246, 0.45));
     font-weight: 700;
     font-size: 5em;
     display:flex;

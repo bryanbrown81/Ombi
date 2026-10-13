@@ -1,0 +1,77 @@
+// ─── Aurora ────────────────────────────────────────────────────────────────────
+.login-panel {
+  position: relative;
+  border-color: rgba(255, 255, 255, 0.16);
+  border-radius: 28px;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+    rgba(14, 16, 32, 0.62);
+  -webkit-backdrop-filter: blur(30px) saturate(170%);
+  backdrop-filter: blur(30px) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 50px 100px -40px rgba(0, 0, 0, 0.95),
+    0 0 90px -30px rgba(139, 92, 246, 0.55);
+
+  // Hairline aurora rim
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(98, 210, 250, 0.6), rgba(139, 92, 246, 0.3) 45%, rgba(244, 114, 182, 0.5));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+.brand-title {
+  background: var(--au-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 6px 24px rgba(139, 92, 246, 0.45));
+}
+
+.input-wrapper {
+  border-radius: 14px;
+}
+
+.custom-checkbox {
+  .checkmark::after {
+    background: var(--au-gradient);
+  }
+
+  input:checked + .checkmark {
+    border-color: var(--au-aurora-2);
+  }
+}
+
+.btn-submit,
+.btn-login--primary {
+  border-radius: 999px;
+  background: var(--au-gradient);
+  background-size: 160% 100%;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 18px 38px -14px rgba(139, 92, 246, 0.85);
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    background-position 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s ease;
+
+  &:hover {
+    background-position: 100% 50%;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      0 22px 44px -14px rgba(244, 114, 182, 0.75);
+  }
+}
+
+.btn-login {
+  border-radius: 999px;
+}

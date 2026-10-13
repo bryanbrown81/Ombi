@@ -1,55 +1,19 @@
-// Instant search panel: Editorial and Aurora design variants.
-// ═══ Editorial ═══════════════════════════════════════════
-:host-context(html[data-discover-design="editorial"]) {
-    .sp {
-        border-color: rgba(244, 241, 234, 0.14);
-        border-radius: 4px;
-        background: rgba(12, 12, 13, 0.985);
-    }
-
-    .sp-option,
-    .sp-thumb,
-    .sp-option-icon,
-    .sp-skeleton-thumb {
-        border-radius: 2px;
-    }
-
-    .sp-label {
-        letter-spacing: 0.2em;
-    }
-
-    .sp-hint-icon {
-        border-radius: 2px;
-        background: rgba(244, 241, 234, 0.08);
-        color: var(--dx-text);
-    }
-
-    .sp--hero .sp-option--result .sp-option-title {
-        font-family: var(--dx-font-display);
-        font-size: 1.3rem;
-        font-weight: 400;
-        letter-spacing: -0.005em;
-    }
+// Aurora glass treatment for the instant search panel.
+.sp {
+    border-color: rgba(255, 255, 255, 0.16);
+    background: linear-gradient(160deg, rgba(38, 30, 70, 0.98), rgba(14, 20, 34, 0.985));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 34px 80px -24px rgba(0, 0, 0, 0.9),
+        0 0 70px -24px rgba(139, 92, 246, 0.55);
 }
 
-// ═══ Aurora ══════════════════════════════════════════════
-:host-context(html[data-discover-design="aurora"]) {
-    .sp {
-        border-color: rgba(255, 255, 255, 0.16);
-        background: linear-gradient(160deg, rgba(38, 30, 70, 0.98), rgba(14, 20, 34, 0.985));
-        box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.14),
-            0 34px 80px -24px rgba(0, 0, 0, 0.9),
-            0 0 70px -24px rgba(139, 92, 246, 0.55);
-    }
+.sp-option.is-active {
+    background: linear-gradient(90deg, rgba(98, 210, 250, 0.16), rgba(139, 92, 246, 0.18));
+}
 
-    .sp-option.is-active {
-        background: linear-gradient(90deg, rgba(98, 210, 250, 0.16), rgba(139, 92, 246, 0.18));
-    }
-
-    .sp-hint-icon {
-        background: linear-gradient(135deg, rgba(98, 210, 250, 0.22), rgba(139, 92, 246, 0.22));
-    }
+.sp-hint-icon {
+    background: linear-gradient(135deg, rgba(98, 210, 250, 0.22), rgba(139, 92, 246, 0.22));
 }
 
 @media (prefers-reduced-motion: reduce) {

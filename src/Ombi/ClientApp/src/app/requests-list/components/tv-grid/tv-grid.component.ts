@@ -23,7 +23,7 @@ import { BaseGridComponent } from "../base-grid/base-grid.component";
     standalone: true,
     templateUrl: "./tv-grid.component.html",
     selector: "tv-grid",
-    styleUrls: ["../_shared-card-grid.scss", "./tv-grid.component.scss"],
+    styleUrls: ["../_shared-card-grid.scss", "../_shared-card-grid.aurora.scss", "./tv-grid.component.scss"],
     imports: [
         CommonModule,
         RouterModule,

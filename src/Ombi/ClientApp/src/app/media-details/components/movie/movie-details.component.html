@@ -4,7 +4,7 @@
 
 <div *ngIf="movie" class="main-content-container">
 	<!-- ============ HERO SECTION ============ -->
-	<top-banner [background]="movie.background">
+	<top-banner [background]="movie.background" [ambient]="movie.backdropPath">
 		<div class="hero-content">
 			<!-- Poster -->
 			<div class="hero-poster">
