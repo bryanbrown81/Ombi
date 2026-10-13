@@ -1,12 +1,13 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterModule, Router } from '@angular/router';
+import { NavigationEnd, RouterModule, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ICustomizationSettings, RequestType } from '../interfaces';
 import { LidarrService, SettingsService, SettingsStateService } from '../services';
@@ -19,7 +20,7 @@ import { Md5 } from 'ts-md5';
 import { Observable } from 'rxjs';
 import { SearchFilter } from './SearchFilter';
 import { StorageService } from '../shared/storage/storage-service';
-import { map, take } from 'rxjs/operators';
+import { filter, map, take, withLatestFrom } from 'rxjs/operators';
 import { RemainingRequestsComponent } from '../shared/remaining-requests/remaining-requests.component';
 import { NavSearchComponent } from './nav-search.component';
 
@@ -34,7 +35,7 @@ export enum SearchFilterType {
     standalone: true,
     selector: 'app-my-nav',
     templateUrl: './my-nav.component.html',
-    styleUrls: ['./my-nav.component.scss'],
+    styleUrls: ['./my-nav.component.scss', './my-nav.mobile.scss'],
     imports: [
         CommonModule,
         MatButtonModule,
@@ -64,6 +65,7 @@ export class MyNavComponent implements OnInit {
   @Input() public userEmail: string;
   @Input() public isAdmin: string;
   @Output() public logoutClick = new EventEmitter();
+  @ViewChild('drawer') private drawer?: MatSidenav;
   public theme: string;
   public issuesEnabled: boolean = false;
   public navItems: INavBar[];
@@ -77,6 +79,8 @@ export class MyNavComponent implements OnInit {
 
   public readonly musicEnabled$ = this.lidarrService.enabled().pipe(take(1));
 
+  private readonly destroyRef = inject(DestroyRef);
+
   constructor(private breakpointObserver: BreakpointObserver,
     private settingsService: SettingsService,
     private customizationFacade: CustomizationFacade,
@@ -89,6 +93,8 @@ export class MyNavComponent implements OnInit {
   }
 
   public async ngOnInit() {
+    this.closeDrawerOnHandsetNavigation();
+
     this.searchFilter = {
       movies: true,
       music: false,
@@ -163,6 +169,19 @@ export class MyNavComponent implements OnInit {
       }
 
       return;
+    });
+  }
+
+  // On handsets the drawer overlays the page, so it has to close once the user has picked a destination.
+  private closeDrawerOnHandsetNavigation(): void {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      withLatestFrom(this.isHandset$),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(([, isHandset]) => {
+      if (isHandset) {
+        this.drawer?.close();
+      }
     });
   }
 

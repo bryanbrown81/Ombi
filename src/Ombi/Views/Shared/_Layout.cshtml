@@ -86,8 +86,10 @@
     <title>@appName</title>
     <meta property="og:title" content="@appName" />
     <meta property="og:image" content="~/images/logo.png" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <meta property="og:site_name" content="@appName" />
     <base href="/@baseUrl" />
@@ -98,11 +100,13 @@
     <link rel="shortcut icon" href="~/images/favicon/favicon.ico"> -->
     <meta name="msapplication-TileColor" content="#df691a">
     <meta name="msapplication-config" content="~/images/favicon/browserconfig.xml">
-    <meta name="theme-color" content="#df691a">
+    @* Matches the Aurora background (--au-bg) so mobile browser chrome blends into the app *@
+    <meta name="theme-color" content="#0f171f">
+    <meta name="color-scheme" content="dark">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">  
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-capable" content="yes">
     <link rel="stylesheet" href="/loading.css" />
-    <script src="//maps.google.com/maps/api/js?libraries=visualization&key=AIzaSyBDar8LXU5vbURGTMcNLI0f9AsoSnpiV3I" async defer></script>
 
     @if (s?.CollectAnalyticData ?? true)
     {

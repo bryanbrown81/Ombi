@@ -35,7 +35,7 @@ const SWIPE_THRESHOLD_PX = 48;
     standalone: true,
     selector: "discover-hero-banner",
     templateUrl: "./hero-banner.component.html",
-    styleUrls: ["./hero-banner.component.scss", "./hero-banner.stage.scss", "./hero-banner.availability.scss"],
+    styleUrls: ["./hero-banner.component.scss", "./hero-banner.stage.scss", "./hero-banner.availability.scss", "./hero-banner.mobile.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,

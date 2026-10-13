@@ -109,6 +109,23 @@ ombi-ambient {
     mix-blend-mode: overlay;
 }
 
+// Phones and touch screens: every glass panel blurs whatever is behind it, so drifting full-screen blend layers force
+// the GPU to re-blur the page on every frame. Hold the fields still and use a cheaper artwork blur instead.
+@media (max-width: 900px), (hover: none) {
+    .ombi-ambient__blob {
+        animation: none;
+        mix-blend-mode: normal;
+    }
+
+    .ombi-ambient__img {
+        filter: blur(40px) saturate(1.5) brightness(0.8);
+    }
+
+    .ombi-ambient__grain {
+        display: none;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .ombi-ambient__blob {
         animation: none !important;

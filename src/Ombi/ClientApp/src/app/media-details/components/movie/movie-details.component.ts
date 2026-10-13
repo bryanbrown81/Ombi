@@ -45,7 +45,7 @@ import { TranslateStatusPipe } from '../../../pipes/TranslateStatus';
 @Component({
     standalone: true,
     templateUrl: './movie-details.component.html',
-    styleUrls: ['../../media-details.component.scss', '../../media-details.aurora.scss'],
+    styleUrls: ['../../media-details.component.scss', '../../media-details.aurora.scss', '../../media-details.mobile.scss'],
     encapsulation: ViewEncapsulation.None,
     imports: [
         CommonModule,

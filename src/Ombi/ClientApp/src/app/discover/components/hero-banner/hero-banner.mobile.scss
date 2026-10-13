@@ -1,0 +1,78 @@
+// Phone layout for the hero stage: a shorter frame so the first rail shows above the fold, a tighter glass panel and
+// actions that share one row (or stack full width) instead of wrapping their labels.
+@media (max-width: 600px) {
+    .hero--aurora {
+        padding-top: 12px;
+    }
+
+    .stage {
+        height: clamp(380px, 60vh, 500px);
+        height: clamp(380px, 60svh, 500px);
+        border-radius: 20px;
+    }
+
+    .stage-body {
+        padding: 10px;
+    }
+
+    .stage-panel {
+        width: 100%;
+        padding: 16px;
+        border-radius: 16px;
+        background:
+            linear-gradient(160deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04)),
+            rgba(12, 10, 30, 0.35);
+        -webkit-backdrop-filter: blur(16px) saturate(170%);
+        backdrop-filter: blur(16px) saturate(170%);
+
+        .hero-eyebrow {
+            margin-bottom: 8px;
+        }
+
+        .hero-title {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            margin-bottom: 10px;
+            padding-bottom: 0.08em;
+            font-size: 1.65rem;
+            line-height: 1.08;
+        }
+
+        .hero-cta {
+            flex: 1 1 auto;
+            justify-content: center;
+            gap: 8px;
+            height: 44px;
+            padding: 0 14px;
+            font-size: 0.88rem;
+            white-space: nowrap;
+        }
+    }
+
+    .hero-meta {
+        margin-bottom: 14px;
+    }
+
+    .hero-actions {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .stage-picker {
+        top: 10px;
+        right: 10px;
+
+        .hero-picker {
+            gap: 6px;
+            padding: 6px;
+            border-radius: 16px;
+        }
+
+        .hero-pause-btn {
+            width: 32px;
+            height: 32px;
+        }
+    }
+}

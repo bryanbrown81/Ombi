@@ -1,0 +1,78 @@
+// ─── Aurora on phones and touch screens ──────────────────
+// Lighter effects and touch-friendly controls for small screens and coarse pointers.
+// Loaded after aurora.scss and aurora-components.scss so these overrides win.
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 600px) {
+    :root {
+        // Blur cost grows with the radius and every glass panel re-blurs while the page scrolls.
+        --au-glass-blur: blur(14px) saturate(160%);
+        // Rail cards wide enough that their action labels ("Play On Jellyfin") stay on one line.
+        --au-card-w: clamp(148px, 40vw, 172px);
+        --au-section-gap: 32px;
+    }
+
+    // Settings, issues and similar pages size their container at 85-95% of the screen, which on a phone is a
+    // wasted gutter on top of the fieldset's own padding. Component styles out-rank a global selector here.
+    .small-middle-container {
+        width: calc(100% - 24px) !important;
+    }
+
+    body fieldset {
+        padding: 20px 14px 18px;
+        border-radius: 18px;
+    }
+
+    // Tighten Bootstrap's 15px column gutters inside fieldsets, keeping a small gap between side-by-side columns.
+    body fieldset .row {
+        margin-inline: -4px;
+    }
+
+    body fieldset [class*="col-"] {
+        padding-inline: 4px;
+    }
+
+    // Let toggle labels wrap instead of truncating ("Do not send Notifications if a User h...").
+    body .mat-slide-toggle,
+    body .mat-slide-toggle-label {
+        height: auto;
+        min-height: 24px;
+    }
+
+    body .mat-slide-toggle {
+        margin-block: 4px;
+        white-space: normal;
+    }
+
+    body .mat-slide-toggle-content {
+        padding-block: 4px;
+        white-space: normal;
+        line-height: 1.35;
+    }
+
+    body .mat-slide-toggle-bar {
+        flex-shrink: 0;
+    }
+
+    body .mat-checkbox-layout {
+        white-space: normal;
+    }
+}
+
+// Touch screens have no hover, so controls that only appear on hover have to stay visible.
+@media (hover: none) and (pointer: coarse) {
+    // iOS Safari zooms the page into any focused field whose text is smaller than 16px.
+    input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"]),
+    select,
+    textarea {
+        font-size: max(16px, 1em) !important;
+    }
+}

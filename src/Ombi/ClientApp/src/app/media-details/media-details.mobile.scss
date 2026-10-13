@@ -1,0 +1,33 @@
+// Phone layout for the details pages (movie, TV, artist). Like the other details sheets this one is unencapsulated,
+// so every rule is scoped to the details markup.
+@media (max-width: 768px) {
+    // The Aurora hero keeps a 600px floor on desktop; on a phone that only adds empty backdrop above the poster.
+    .details-hero {
+        min-height: 0;
+    }
+
+    .details-hero .hero-content {
+        gap: 20px;
+        padding-top: 48px;
+    }
+
+    .details-hero .hero-poster {
+        width: clamp(132px, 40vw, 170px);
+    }
+}
+
+@media (max-width: 600px) {
+    // Two compact facts per row instead of one tall card per fact.
+    .info-panel-modern .info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .info-panel-modern .info-item {
+        min-width: 0;
+        padding: 14px;
+        border-radius: 14px;
+        overflow-wrap: anywhere;
+    }
+}
