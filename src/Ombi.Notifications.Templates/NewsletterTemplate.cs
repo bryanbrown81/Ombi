@@ -13,9 +13,7 @@ namespace Ombi.Notifications.Templates
             {
                 if (string.IsNullOrEmpty(_templateLocation))
                 {
-                    //_templateLocation = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Debug", "net6.0", "Templates", "NewsletterTemplate.html");
-                    _templateLocation = Path.Combine(Directory.GetCurrentDirectory(), "Templates", "NewsletterTemplate.html");
-
+                    _templateLocation = Path.Combine(AppContext.BaseDirectory, "Templates", "NewsletterTemplate.html");
                 }
                 return _templateLocation;
             }
