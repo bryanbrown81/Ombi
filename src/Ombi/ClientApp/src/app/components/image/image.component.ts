@@ -2,8 +2,10 @@ import { OmbiCommonModules } from "../modules";
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   Inject,
   Input,
+  Output,
   ViewEncapsulation,
 } from "@angular/core";
 import { RequestType } from "../../interfaces";
@@ -44,6 +46,9 @@ export class ImageComponent {
   @Input() public alt: string;
   @Input() public style: string;
 
+  /** Fires whenever the <img> finishes loading (including the placeholder fallback). */
+  @Output() public loaded = new EventEmitter<void>();
+
   private baseUrl: string = "";
 
   private defaultTv = "/images/default_tv_poster.png";
@@ -70,6 +75,11 @@ export class ImageComponent {
       // Prevent unnecessary error handling when src is not specified.
       this.src = this.getPlaceholderImage();
     }
+  }
+
+  public onLoad(event: Event) {
+    (event.target as HTMLElement)?.setAttribute?.("data-loaded", "");
+    this.loaded.emit();
   }
 
   public onError(event: any) {

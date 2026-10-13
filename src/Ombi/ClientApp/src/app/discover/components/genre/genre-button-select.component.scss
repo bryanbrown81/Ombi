@@ -2,70 +2,226 @@
     display: block;
 }
 
-.genre-row {
+// ─── Chip row (Cinema & Aurora) ──────────────────────────
+.genre-list {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-.genre-label {
-    flex-shrink: 0;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: rgba(255, 255, 255, 0.45);
-    min-width: 56px;
-}
-
-.genre-scroll {
-    display: flex;
-    gap: 8px;
+    gap: 10px;
+    margin-inline: calc(var(--dx-gutter) * -1);
+    padding: 6px var(--dx-gutter) 10px;
     overflow-x: auto;
-    padding: 4px 0;
+    overscroll-behavior-x: contain;
     scrollbar-width: none;
-    -ms-overflow-style: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--dx-gutter), #000 calc(100% - var(--dx-gutter)), transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 var(--dx-gutter), #000 calc(100% - var(--dx-gutter)), transparent 100%);
 
     &::-webkit-scrollbar {
         display: none;
     }
 }
 
-.genre-chip-group {
-    background: transparent;
-    border: none;
-    flex-shrink: 0;
+.genre-chip {
+    --chip-color: hsl(var(--hue, 200) 85% 68%);
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 42px;
+    padding: 0 18px 0 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.84);
+    font-family: var(--dx-font);
+    font-size: 0.86rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    animation: dx-pop 0.6s var(--dx-ease-out) backwards;
+    animation-delay: calc(var(--i, 0) * 28ms);
+    transition:
+        transform 0.35s var(--dx-ease-out),
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        color 0.25s ease,
+        opacity 0.3s ease,
+        box-shadow 0.35s var(--dx-ease-out);
+
+    &:hover {
+        transform: translate3d(0, -2px, 0);
+        border-color: rgba(255, 255, 255, 0.24);
+        background: rgba(255, 255, 255, 0.09);
+        color: #fff;
+        box-shadow: 0 12px 26px -16px rgba(0, 0, 0, 0.9);
+    }
+
+    &:active {
+        transform: scale(0.97);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--dx-accent);
+        outline-offset: 2px;
+    }
+
+    &.is-pending {
+        border-color: var(--chip-color);
+        color: #fff;
+    }
+}
+
+.genre-icon {
+    display: grid;
+    place-items: center;
+    width: 16px;
+    color: var(--chip-color);
+    font-size: 0.82rem;
+}
+
+.genre-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: dx-spin 0.7s linear infinite;
+}
+
+.genre-list.is-busy .genre-chip:not(.is-pending) {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.genre-list--loading {
+    pointer-events: none;
+}
+
+.genre-skeleton {
+    flex: none;
+    height: 42px;
+    border-radius: 999px;
+}
+
+// ═══ Editorial: a typographic index of genres ════════════
+:host-context(html[data-discover-design="editorial"]) {
+    .genre-list {
+        display: block;
+        margin: 0;
+        padding: 0;
+        overflow: visible;
+        -webkit-mask-image: none;
+        mask-image: none;
+        max-width: 1200px;
+        font-family: var(--dx-font-display);
+        font-size: clamp(1.7rem, 1.6vw + 1.1rem, 2.75rem);
+        line-height: 1.22;
+    }
 
     .genre-chip {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        color: rgba(255, 255, 255, 0.8);
+        display: inline;
+        height: auto;
         padding: 0;
-        transition: all 0.2s ease;
+        border: none;
+        border-radius: 0;
+        background: none;
+        color: var(--dx-text-3);
+        font: inherit;
+        white-space: normal;
+        text-decoration: underline;
+        text-decoration-color: transparent;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.14em;
+        box-shadow: none;
+        animation-name: dx-fade;
+        transition:
+            color 0.3s ease,
+            text-decoration-color 0.3s ease,
+            opacity 0.3s ease;
 
         &:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            transform: none;
+            background: none;
+            color: var(--dx-text);
+            text-decoration-color: rgba(244, 241, 234, 0.5);
+            box-shadow: none;
+        }
+
+        &:not(:last-child)::after {
+            content: "/";
+            display: inline-block;
+            margin: 0 0.32em;
+            color: rgba(244, 241, 234, 0.16);
+            text-decoration: none;
+        }
+
+        &.is-pending {
+            color: var(--dx-text);
+            font-style: italic;
         }
     }
 
-    ::ng-deep .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
-        line-height: 32px;
-        padding: 0 16px;
-        font-size: 0.85rem;
-        font-weight: 400;
+    .genre-icon {
+        display: none;
     }
 
-    ::ng-deep .mat-button-toggle-button:focus {
-        outline: none;
+    .genre-chip.is-pending .genre-name::after {
+        content: "";
+        display: inline-block;
+        width: 0.32em;
+        height: 0.32em;
+        margin-left: 0.25em;
+        border-radius: 50%;
+        background: var(--dx-accent);
+        vertical-align: middle;
+        animation: editorial-blink 0.9s ease-in-out infinite alternate;
     }
 
-    ::ng-deep .mat-button-toggle-button:focus-visible {
-        outline: 2px solid rgba(255, 255, 255, 0.7);
-        outline-offset: -2px;
-        border-radius: 20px;
+    .genre-list--loading {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .genre-skeleton {
+        height: 34px;
+        border-radius: 2px;
+    }
+}
+
+@keyframes editorial-blink {
+    to {
+        opacity: 0.2;
+    }
+}
+
+// ═══ Aurora: glass chips tinted by genre ═════════════════
+:host-context(html[data-discover-design="aurora"]) {
+    .genre-chip {
+        border-color: hsl(var(--hue, 200) 90% 72% / 0.24);
+        background: linear-gradient(135deg, hsl(var(--hue, 200) 90% 62% / 0.16), rgba(255, 255, 255, 0.04) 70%);
+        -webkit-backdrop-filter: blur(14px) saturate(170%);
+        backdrop-filter: blur(14px) saturate(170%);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+
+        &:hover {
+            border-color: hsl(var(--hue, 200) 90% 72% / 0.55);
+            background: linear-gradient(135deg, hsl(var(--hue, 200) 90% 62% / 0.3), rgba(255, 255, 255, 0.06) 70%);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 14px 30px -12px hsl(var(--hue, 200) 90% 60% / 0.6);
+        }
+    }
+
+    .genre-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: hsl(var(--hue, 200) 90% 62% / 0.22);
+        font-size: 0.7rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .genre-chip {
+        animation: none;
     }
 }

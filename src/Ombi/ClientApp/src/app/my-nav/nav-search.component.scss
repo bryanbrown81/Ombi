@@ -1,28 +1,39 @@
 @use "./styles/variables.scss" as *;
 
+:host {
+    display: block;
+}
+
+.nav-search {
+    position: relative;
+}
+
 .search-wrapper {
     display: flex;
     align-items: center;
     position: relative;
+    width: 40px;
     height: 40px;
+    overflow: hidden;
+    border: 1px solid transparent;
     border-radius: 24px;
     background: rgba(255, 255, 255, 0.08);
-    border: 1px solid transparent;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 40px;
-    overflow: hidden;
     cursor: pointer;
+    transition:
+        width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 
     &:hover {
         background: rgba(255, 255, 255, 0.12);
     }
 
     &.expanded {
-        width: 100%;
-        max-width: 480px;
+        width: min(460px, 38vw);
         background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
-        cursor: default;
+        border-color: rgba(255, 255, 255, 0.18);
+        cursor: text;
 
         &:hover {
             background: rgba(255, 255, 255, 0.12);
@@ -30,18 +41,14 @@
 
         &:focus-within {
             border-color: $ombi-active;
-            background: rgba(255, 255, 255, 0.14);
-            box-shadow: 0 0 0 3px rgba($ombi-active, 0.15);
+            background: rgba(255, 255, 255, 0.13);
+            box-shadow: 0 0 0 4px rgba($ombi-active, 0.14);
         }
 
         .search-input {
             opacity: 1;
             width: 100%;
-            padding: 0 8px;
-        }
-
-        .search-clear-btn {
-            display: flex;
+            padding: 0 8px 0 2px;
         }
     }
 }
@@ -53,58 +60,125 @@
     width: 40px;
     min-width: 40px;
     height: 40px;
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.7);
-    cursor: pointer;
-    font-size: 14px;
-    transition: color 0.2s ease;
     padding: 0;
+    border: none;
+    background: none;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s ease;
 
     &:hover {
         color: #fff;
     }
+}
+
+.search-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid $ombi-active;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: dx-spin 0.7s linear infinite;
 }
 
 .search-input {
     flex: 1;
-    background: none;
+    width: 0;
+    min-width: 0;
+    padding: 0;
     border: none;
     outline: none;
+    background: none;
     color: #fff;
-    font-size: 14px;
     font-family: Inter, Roboto, sans-serif;
+    font-size: 14px;
     letter-spacing: 0.01em;
     opacity: 0;
-    width: 0;
-    padding: 0;
-    transition: opacity 0.2s ease, width 0.3s ease;
+    transition: opacity 0.25s ease 0.08s;
 
     &::placeholder {
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.42);
         font-weight: 400;
     }
 }
 
+.search-kbd {
+    flex: none;
+    margin-right: 10px;
+    padding: 2px 7px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: Inter, Roboto, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    animation: dx-fade 0.3s ease 0.2s backwards;
+}
+
 .search-clear-btn {
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    min-width: 32px;
-    height: 32px;
-    margin-right: 4px;
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    font-size: 12px;
-    border-radius: 50%;
-    transition: all 0.2s ease;
+    flex: none;
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
     padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease;
 
     &:hover {
         color: #fff;
         background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+.nav-search-panel {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 10px);
+    left: 0;
+    width: max(100%, 480px);
+    max-width: calc(100vw - 24px);
+}
+
+@media (max-width: 600px) {
+    .search-wrapper.expanded {
+        width: min(280px, calc(100vw - 190px));
+    }
+
+    .search-kbd {
+        display: none;
+    }
+
+    .nav-search-panel {
+        position: fixed;
+        top: 60px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        max-width: none;
+    }
+}
+
+@media (hover: none), (pointer: coarse) {
+    .search-kbd {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .search-wrapper,
+    .search-input {
+        transition: none;
     }
 }

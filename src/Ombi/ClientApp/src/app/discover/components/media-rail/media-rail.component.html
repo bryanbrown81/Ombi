@@ -1,0 +1,17 @@
+<div class="ombi-rail" [class.ombi-rail--can-prev]="canPrev()" [class.ombi-rail--can-next]="canNext()">
+    <button type="button" class="ombi-rail__nav ombi-rail__nav--prev" tabindex="-1" aria-hidden="true"
+        [disabled]="!canPrev()" (click)="page(-1)">
+        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+    </button>
+
+    <div class="ombi-rail__viewport" #viewport>
+        <div class="ombi-rail__track" #track role="list" [attr.aria-label]="label() || null">
+            <ng-content></ng-content>
+        </div>
+    </div>
+
+    <button type="button" class="ombi-rail__nav ombi-rail__nav--next" tabindex="-1" aria-hidden="true"
+        [disabled]="!canNext()" (click)="page(1)">
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+    </button>
+</div>

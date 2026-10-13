@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { CarouselModule } from "primeng/carousel";
+import { Carousel, CarouselModule } from "primeng/carousel";
 import { TranslateModule } from "@ngx-translate/core";
 import { RouterModule } from "@angular/router";
 import { ImageComponent } from "../../../../components";
@@ -23,6 +23,9 @@ import { FormsModule } from "@angular/forms";
 export class CastCarouselComponent {
 
     constructor() {
+        // Disable PrimeNG's touch-move handler, which causes awkward scroll loops on touch devices.
+        // (This used to be applied globally as a side effect of visiting the Discover page.)
+        Carousel.prototype.onTouchMove = () => { };
         this.responsiveOptions = [
             {
                 breakpoint: '1200px',

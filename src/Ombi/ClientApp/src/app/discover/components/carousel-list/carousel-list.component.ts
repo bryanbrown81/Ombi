@@ -1,9 +1,6 @@
-import { Component, ViewChild, Inject, input, output, signal, computed, inject, ChangeDetectionStrategy } from "@angular/core";
+import { Component, input, output, signal, computed, inject, viewChild, ChangeDetectionStrategy } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { MatButtonToggleModule, MatButtonToggleChange } from '@angular/material/button-toggle';
 import { TranslateModule } from "@ngx-translate/core";
-import { CarouselModule, Carousel } from 'primeng/carousel';
-import { SkeletonModule } from 'primeng/skeleton';
 
 import { DiscoverOption, IDiscoverCardResult } from "../../interfaces";
 import { ISearchMovieResult, ISearchTvResult, RequestType } from "../../../interfaces";
@@ -12,6 +9,7 @@ import { StorageService } from "../../../shared/storage/storage-service";
 import { FeaturesFacade } from "../../../state/features/features.facade";
 import { APP_BASE_HREF } from "@angular/common";
 import { DiscoverCardComponent } from "../card/discover-card.component";
+import { MediaRailComponent } from "../media-rail/media-rail.component";
 
 export enum DiscoverType {
     Upcoming,
@@ -21,6 +19,8 @@ export enum DiscoverType {
     Seasonal,
 }
 
+const OPTION_ORDER = [DiscoverOption.Combined, DiscoverOption.Movie, DiscoverOption.Tv];
+
 @Component({
     standalone: true,
     selector: "carousel-list",
@@ -29,11 +29,9 @@ export enum DiscoverType {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        MatButtonToggleModule,
         TranslateModule,
-        CarouselModule,
-        SkeletonModule,
-        DiscoverCardComponent
+        DiscoverCardComponent,
+        MediaRailComponent
     ]
 })
 export class CarouselListComponent {
@@ -41,11 +39,14 @@ export class CarouselListComponent {
     public discoverType = input.required<DiscoverType>();
     public id = input.required<string>();
     public isAdmin = input<boolean>(false);
-    
-    // Output using new output() function  
+    public title = input<string>("");
+    /** Editorial section number, e.g. "02". */
+    public index = input<string>("");
+
+    // Output using new output() function
     public movieCount = output<number>();
-    
-    @ViewChild('carousel', {static: false}) carousel: Carousel;
+
+    private readonly rail = viewChild(MediaRailComponent);
 
     // Services using inject() function
     private searchService = inject(SearchV2Service);
@@ -57,246 +58,173 @@ export class CarouselListComponent {
     public DiscoverOption = DiscoverOption;
     public RequestType = RequestType;
     public DiscoverType = DiscoverType;
-    
+
     // State using signals
     public discoverOptions = signal<DiscoverOption>(DiscoverOption.Combined);
     public discoverResults = signal<IDiscoverCardResult[]>([]);
     public movies = signal<ISearchMovieResult[]>([]);
     public tvShows = signal<ISearchTvResult[]>([]);
     public loadingFlag = signal<boolean>(false);
+    public loadingMore = signal<boolean>(false);
     public is4kEnabled = signal<boolean>(false);
-    
+
     // Computed properties
     public hasResults = computed(() => this.discoverResults().length > 0);
     public totalResults = computed(() => this.discoverResults().length);
+    public optionIndex = computed(() => Math.max(0, OPTION_ORDER.indexOf(+this.discoverOptions())));
 
     get mediaTypeStorageKey() {
         return "DiscoverOptions" + this.discoverType().toString();
     };
-    
+
     private amountToLoad = 20;
     private currentlyLoaded = 0;
-    public responsiveOptions: any;
-
-    constructor() {
-
-        Carousel.prototype.onTouchMove = () => { },
-        this.responsiveOptions = [
-            {
-                breakpoint: '4000px',
-                numVisible: 17,
-                numScroll: 16
-            },
-            {
-                breakpoint: '3800px',
-                numVisible: 16,
-                numScroll: 15
-            },
-            {
-                breakpoint: '3600px',
-                numVisible: 15,
-                numScroll: 14
-            },
-            {
-                breakpoint: '3400px',
-                numVisible: 14,
-                numScroll: 13
-            },
-            {
-                breakpoint: '3200px',
-                numVisible: 13,
-                numScroll: 12
-            },
-            {
-                breakpoint: '3000px',
-                numVisible: 12,
-                numScroll: 11
-            },
-            {
-                breakpoint: '2800px',
-                numVisible: 11,
-                numScroll: 10
-            },
-            {
-                breakpoint: '2600px',
-                numVisible: 10,
-                numScroll: 9
-            },
-            {
-                breakpoint: '2400px',
-                numVisible: 9,
-                numScroll: 8
-            },
-            {
-                breakpoint: '2200px',
-                numVisible: 8,
-                numScroll: 7
-            },
-            {
-                breakpoint: '2000px',
-                numVisible: 7,
-                numScroll: 6
-            },
-            {
-                breakpoint: '1800px',
-                numVisible: 6,
-                numScroll: 5
-            },
-            {
-                breakpoint: '1650px',
-                numVisible: 5,
-                numScroll: 4
-            },
-            {
-                breakpoint: '1500px',
-                numVisible: 4,
-                numScroll: 3
-            },
-            {
-                breakpoint: '768px',
-                numVisible: 3,
-                numScroll: 2
-            },
-            {
-                breakpoint: '660px',
-                numVisible: 2,
-                numScroll: 2
-            },
-            {
-                breakpoint: '480px',
-                numVisible: 1,
-                numScroll: 1
-            }
-        ];
-    }
+    /** Incremented on every mode switch so late responses for the old mode are dropped. */
+    private generation = 0;
+    private exhausted = false;
 
     public async ngOnInit() {
         // Initialize 4K feature flag
         this.is4kEnabled.set(this.featureFacade.is4kEnabled());
         this.currentlyLoaded = 0;
-        
+
         // Load saved discover options from storage
         const localDiscoverOptions = +this.storageService.get(this.mediaTypeStorageKey);
         if (localDiscoverOptions) {
             this.discoverOptions.set(DiscoverOption[DiscoverOption[localDiscoverOptions]]);
         }
 
-        // Load initial data - just enough to fill the first carousel page
-        // This reduces initial API calls and improves loading performance
+        // Load initial data - just enough to fill the first rail page
         await this.loadData(false);
-        
-        // If we don't have enough results to fill the carousel, load one more batch
+
+        // If we don't have enough results to fill the rail, load one more batch
         if (this.discoverResults().length < 20) {
             await this.loadData(false);
         }
     }
 
-    public async toggleChanged(event: MatButtonToggleChange) {
-        await this.switchDiscoverMode(event.value);
+    public async selectOption(option: DiscoverOption) {
+        await this.switchDiscoverMode(option);
     }
 
-    public async newPage() {
-        // Note this is using the internal carousel APIs
-        // https://github.com/primefaces/primeng/blob/master/src/app/components/carousel/carousel.ts
-        if (!this.carousel?.page) {
+    /** Appends the next page when the rail scrolls near its end. */
+    public async loadMore() {
+        if (this.loadingMore() || this.loadingFlag() || this.exhausted || !this.hasResults()) {
             return;
         }
-
-        var end = this.carousel.page >= (this.carousel.totalDots() - 2) || this.carousel.totalDots() === 1;
-        if (end) {
-            var offset = this.currentlyLoaded;
-            var moviePromise: Promise<void>;
-            var tvPromise: Promise<void>;
-            switch (+this.discoverOptions()) {
-                case DiscoverOption.Combined:
-                    moviePromise = this.loadMovies(offset);
-                    tvPromise = this.loadTv(offset);
-                    break;
-                case DiscoverOption.Movie:
-                    moviePromise = this.loadMovies(offset);
-                    break;
-                case DiscoverOption.Tv:
-                    tvPromise = this.loadTv(offset);
-                    break;
+        const generation = this.generation;
+        const before = this.discoverResults().length;
+        this.loadingMore.set(true);
+        try {
+            await this.fetchPage(this.currentlyLoaded);
+            if (generation !== this.generation) {
+                return;
             }
-            await Promise.all([moviePromise, tvPromise].filter(Boolean));
             this.currentlyLoaded += this.amountToLoad;
-
             this.createModel();
+            if (this.discoverResults().length === before) {
+                this.exhausted = true;
+            }
+        } catch (err) {
+            console.warn("Discover: failed to load more results", err);
+        } finally {
+            this.loadingMore.set(false);
         }
     }
 
     private async loadData(clearExisting: boolean = true) {
-        var offset = this.currentlyLoaded;
-        var moviePromise: Promise<void>;
-        var tvPromise: Promise<void>;
+        const generation = this.generation;
+        await this.fetchPage(this.currentlyLoaded);
+        if (generation !== this.generation) {
+            return;
+        }
+        this.currentlyLoaded += this.amountToLoad;
+        this.createInitialModel(clearExisting);
+    }
+
+    private async fetchPage(offset: number) {
+        const generation = this.generation;
+        let moviePromise: Promise<void>;
+        let tvPromise: Promise<void>;
         switch (+this.discoverOptions()) {
             case DiscoverOption.Combined:
-                moviePromise = this.loadMovies(offset);
-                tvPromise = this.loadTv(offset);
+                moviePromise = this.loadMovies(offset, generation);
+                tvPromise = this.loadTv(offset, generation);
                 break;
             case DiscoverOption.Movie:
-                moviePromise = this.loadMovies(offset);
+                moviePromise = this.loadMovies(offset, generation);
                 break;
             case DiscoverOption.Tv:
-                tvPromise = this.loadTv(offset);
+                tvPromise = this.loadTv(offset, generation);
                 break;
         }
         await Promise.all([moviePromise, tvPromise].filter(Boolean));
-        this.currentlyLoaded += this.amountToLoad;
-        this.createInitialModel(clearExisting);
     }
 
     private async switchDiscoverMode(newMode: DiscoverOption) {
         if (this.discoverOptions() === newMode) {
             return;
         }
+        this.generation++;
+        this.exhausted = false;
         this.loading();
         this.currentlyLoaded = 0;
         this.discoverOptions.set(+newMode);
         this.storageService.save(this.mediaTypeStorageKey, newMode.toString());
-        await this.loadData();
-        this.finishLoading();
+        this.rail()?.scrollToStart();
+        try {
+            await this.loadData();
+        } finally {
+            this.finishLoading();
+        }
     }
 
-    private async loadMovies(offset?: number) {
-        var loadOffset = offset ?? this.currentlyLoaded;
-        switch (this.discoverType()) {
-            case DiscoverType.Popular:
-                this.movies.set(await this.searchService.popularMoviesByPage(loadOffset, this.amountToLoad));
-                break;
-            case DiscoverType.Trending:
-                this.movies.set(await this.searchService.nowPlayingMoviesByPage(loadOffset, this.amountToLoad));
-                break;
-            case DiscoverType.Upcoming:
-                this.movies.set(await this.searchService.upcomingMoviesByPage(loadOffset, this.amountToLoad));
-                break;
-            case DiscoverType.RecentlyRequested:
-                this.movies.set(await this.searchService.recentlyRequestedMoviesByPage(loadOffset, this.amountToLoad));
-                break;
-            case DiscoverType.Seasonal:
-                this.movies.set(await this.searchService.seasonalMoviesByPage(loadOffset, this.amountToLoad));
-                break;
+    private async loadMovies(offset?: number, generation = this.generation) {
+        const movies = await this.fetchMovies(offset ?? this.currentlyLoaded);
+        if (generation !== this.generation || !movies) {
+            return;
         }
+        this.movies.set(movies);
         this.movieCount.emit(this.movies().length);
     }
 
-    private async loadTv(offset?: number) {
-        var loadOffset = offset ?? this.currentlyLoaded;
+    private async loadTv(offset?: number, generation = this.generation) {
+        const shows = await this.fetchTv(offset ?? this.currentlyLoaded);
+        if (generation !== this.generation || !shows) {
+            return;
+        }
+        this.tvShows.set(shows);
+    }
+
+    private fetchMovies(loadOffset: number): Promise<ISearchMovieResult[]> {
         switch (this.discoverType()) {
             case DiscoverType.Popular:
-                this.tvShows.set(await this.searchService.popularTvByPage(loadOffset, this.amountToLoad));
-                break;
+                return this.searchService.popularMoviesByPage(loadOffset, this.amountToLoad);
             case DiscoverType.Trending:
-                this.tvShows.set(await this.searchService.trendingTvByPage(loadOffset, this.amountToLoad));
-                break;
+                return this.searchService.nowPlayingMoviesByPage(loadOffset, this.amountToLoad);
             case DiscoverType.Upcoming:
-                this.tvShows.set(await this.searchService.anticipatedTvByPage(loadOffset, this.amountToLoad));
-                break;
+                return this.searchService.upcomingMoviesByPage(loadOffset, this.amountToLoad);
             case DiscoverType.RecentlyRequested:
-                // this.tvShows = await this.searchService.recentlyRequestedMoviesByPage(loadOffset, this.amountToLoad); // TODO need to do some more mapping
-                break;
+                return this.searchService.recentlyRequestedMoviesByPage(loadOffset, this.amountToLoad);
+            case DiscoverType.Seasonal:
+                return this.searchService.seasonalMoviesByPage(loadOffset, this.amountToLoad);
         }
+        return Promise.resolve(null);
+    }
+
+    private fetchTv(loadOffset: number): Promise<ISearchTvResult[]> {
+        switch (this.discoverType()) {
+            case DiscoverType.Popular:
+                return this.searchService.popularTvByPage(loadOffset, this.amountToLoad);
+            case DiscoverType.Trending:
+                return this.searchService.trendingTvByPage(loadOffset, this.amountToLoad);
+            case DiscoverType.Upcoming:
+                return this.searchService.anticipatedTvByPage(loadOffset, this.amountToLoad);
+            case DiscoverType.RecentlyRequested:
+                // TODO need to do some more mapping for recently requested TV
+                return Promise.resolve(null);
+        }
+        return Promise.resolve(null);
     }
 
     private createInitialModel(clearExisting: boolean = true) {
@@ -392,6 +320,4 @@ export class CarouselListComponent {
     private finishLoading() {
         this.loadingFlag.set(false);
     }
-
-
 }

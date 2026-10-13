@@ -1,19 +1,44 @@
-<form [formGroup]='searchForm' class="search-wrapper" [class.expanded]="isExpanded"
-    (submit)="$event.preventDefault()">
-    <button type="button" id="nav-search-btn" class="search-icon-btn" (click)="toggleSearch()" aria-label="Search">
-        <i class="fas fa-search"></i>
-    </button>
-    <input
-        #searchInput
-        id="nav-search"
-        class="search-input"
-        [attr.tabindex]="isExpanded ? null : -1"
-        [placeholder]="isExpanded ? ('NavigationBar.Search' | translate) : ''"
-        formControlName="input"
-        (blur)="onBlur()"
-        autocomplete="off"
-        spellcheck="false">
-    <button type="button" class="search-clear-btn" *ngIf="searchForm.get('input')?.value" (click)="clearSearch()" aria-label="Clear search">
-        <i class="fas fa-times"></i>
-    </button>
-</form>
+<div class="nav-search" [class.expanded]="expanded()">
+    <form class="search-wrapper" role="search" [class.expanded]="expanded()" [class.panel-open]="ctrl.panelVisible()"
+        (submit)="$event.preventDefault()">
+        <button type="button" id="nav-search-btn" class="search-icon-btn" (click)="toggleSearch()"
+            [attr.aria-label]="'NavigationBar.Search' | translate">
+            @if (ctrl.loading()) {
+                <span class="search-spinner" aria-hidden="true"></span>
+            } @else {
+                <i class="fas fa-search" aria-hidden="true"></i>
+            }
+        </button>
+        <input
+            #searchInput
+            id="nav-search"
+            class="search-input"
+            type="text"
+            role="combobox"
+            aria-autocomplete="list"
+            [attr.aria-expanded]="ctrl.panelVisible()"
+            [attr.aria-controls]="ctrl.listboxId"
+            [attr.aria-activedescendant]="ctrl.panelVisible() ? ctrl.activeOptionId() : null"
+            [attr.tabindex]="expanded() ? null : -1"
+            [placeholder]="expanded() ? ('NavigationBar.Search' | translate) : ''"
+            [value]="ctrl.query()"
+            (input)="onInput($any($event.target).value)"
+            (keydown)="onKeydown($event)"
+            (focus)="onFocus()"
+            (blur)="onBlur()"
+            autocomplete="off"
+            spellcheck="false">
+        @if (ctrl.query()) {
+            <button type="button" class="search-clear-btn" (click)="clearSearch()" (mousedown)="$event.preventDefault()"
+                [attr.aria-label]="'Discovery.Search.ClearQuery' | translate">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        } @else if (expanded()) {
+            <kbd class="search-kbd" aria-hidden="true">{{ isMac ? '⌘' : 'Ctrl' }} K</kbd>
+        }
+    </form>
+
+    @if (ctrl.panelVisible()) {
+        <ombi-search-panel class="nav-search-panel" [ctrl]="ctrl" variant="nav"></ombi-search-panel>
+    }
+</div>

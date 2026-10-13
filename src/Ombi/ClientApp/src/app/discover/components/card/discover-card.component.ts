@@ -17,12 +17,13 @@ import { MatDialog } from "@angular/material/dialog";
 import { IMovieRequestModel, RequestType } from "../../../interfaces";
 import { TranslateService } from "@ngx-translate/core";
 import { ImageComponent } from "../../../components";
+import { TiltDirective } from "../../directives/tilt.directive";
 
 @Component({
     standalone: true,
     selector: "discover-card",
     templateUrl: "./discover-card.component.html",
-    styleUrls: ["./discover-card.component.scss"],
+    styleUrls: ["./discover-card.component.scss", "./discover-card.actions.scss", "./discover-card.editorial.scss", "./discover-card.aurora.scss"],
     imports: [
         CommonModule,
         RouterModule,
@@ -30,7 +31,8 @@ import { ImageComponent } from "../../../components";
         MatMenuModule,
         MatProgressSpinnerModule,
         TranslateModule,
-        ImageComponent
+        ImageComponent,
+        TiltDirective
     ]
 })
 export class DiscoverCardComponent implements OnInit {
@@ -42,6 +44,7 @@ export class DiscoverCardComponent implements OnInit {
     public RequestType = RequestType;
     public hide: boolean;
     public fullyLoaded = false;
+    public posterLoaded = false;
     public loading: boolean;
     public allow4KButton: boolean = false;
 

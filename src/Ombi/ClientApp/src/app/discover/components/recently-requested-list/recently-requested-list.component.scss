@@ -1,55 +1,38 @@
-@use "./styles/variables.scss" as *;
-
 :host {
     display: block;
 }
 
-:host ::ng-deep .p-carousel-indicators {
-    display: none !important;
+:host(.is-empty) {
+    display: none;
 }
 
-// Carousel navigation arrows
-:host ::ng-deep .p-carousel-prev,
-:host ::ng-deep .p-carousel-next {
-    background: rgba(15, 23, 31, 0.7) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: #fff !important;
-    border-radius: 50% !important;
-    width: 40px !important;
-    height: 40px !important;
-    transition: all 0.2s ease !important;
-    backdrop-filter: blur(8px);
+// Let the shared detailed card fill the rail column instead of its fixed width
+.recently-rail ::ng-deep ombi-detailed-card {
+    display: block;
+    padding: 0;
+}
 
-    &:hover {
-        background: rgba(255, 255, 255, 0.15) !important;
-        border-color: rgba(255, 255, 255, 0.3) !important;
+.recently-rail ::ng-deep .detailed-card {
+    width: 100%;
+}
+
+.recently-skeleton {
+    flex: 0 0 var(--dx-card-w);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .dx-skeleton-poster {
+        flex: none;
+        width: 100%;
     }
 }
 
-:host ::ng-deep .p-carousel-item {
-    display: flex;
-    justify-content: center;
-}
+.recently-skeleton-line {
+    height: 12px;
+    border-radius: 6px;
 
-.loading-container {
-    display: flex;
-    gap: 12px;
-    overflow: hidden;
-}
-
-.loading-container .col-2 {
-    flex: 0 0 auto;
-    width: 180px;
-}
-
-@media (max-width: 768px) {
-    .loading-container .col-2 {
-        width: 140px;
-    }
-}
-
-@media (max-width: 480px) {
-    .loading-container .col-2 {
-        width: 120px;
+    &.short {
+        width: 60%;
     }
 }

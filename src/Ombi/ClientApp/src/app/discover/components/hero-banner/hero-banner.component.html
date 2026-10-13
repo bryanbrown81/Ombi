@@ -1,48 +1,161 @@
+<!-- Shared copy block: re-mounted per slide so its entrance animation replays -->
+<ng-template #copy let-item>
+    <div class="hero-eyebrow">
+        <span class="hero-eyebrow-mark" aria-hidden="true"></span>
+        {{ 'Discovery.NowPlaying' | translate }}
+    </div>
+    <h1 class="hero-title">{{ item.title }}</h1>
+    <div class="hero-meta">
+        @if (item.year) {
+            <span class="hero-year">{{ item.year }}</span>
+        }
+        @if (item.rating) {
+            <span class="hero-rating">
+                <i class="fas fa-star" aria-hidden="true"></i> {{ getRatingDisplay() }}
+            </span>
+        }
+        <span class="hero-type">{{ 'Common.movie' | translate }}</span>
+    </div>
+    <p class="hero-overview">{{ item.overview }}</p>
+    <div class="hero-actions">
+        <a [routerLink]="getDetailsLink()" class="hero-cta">
+            <i class="fas fa-circle-info" aria-hidden="true"></i>
+            {{ 'Discovery.ViewDetails' | translate }}
+        </a>
+    </div>
+</ng-template>
+
+<!-- Shared slide stack: every backdrop stays mounted so changes cross-fade -->
+<ng-template #slides>
+    @for (item of items(); track item.id; let i = $index) {
+        <div class="hero-slide" [class.is-active]="i === activeIndex()" [class.is-leaving]="i === previousIndex()">
+            <img class="hero-slide-img" [src]="backdropFor(item)" alt="" decoding="async"
+                [attr.fetchpriority]="i === 0 ? 'high' : 'low'">
+        </div>
+    }
+</ng-template>
+
+<!-- Shared picker: thumbnails with a progress bar that drains with the rotation timer -->
+<ng-template #picker let-poster="poster">
+    @if (items().length > 1) {
+        <div class="hero-picker" role="group" [attr.aria-label]="'Discovery.Featured' | translate">
+            <button
+                type="button"
+                class="hero-pause-btn"
+                [attr.aria-pressed]="paused()"
+                (click)="togglePause()"
+                [attr.aria-label]="(paused() ? 'Discovery.PlaySlideshow' : 'Discovery.PauseSlideshow') | translate">
+                <i [class]="paused() ? 'fas fa-play' : 'fas fa-pause'" aria-hidden="true"></i>
+            </button>
+            @for (item of items(); track item.id; let i = $index) {
+                <button
+                    type="button"
+                    class="hero-indicator"
+                    [class.active]="i === activeIndex()"
+                    [attr.data-hero-index]="i"
+                    [attr.aria-pressed]="i === activeIndex()"
+                    (click)="selectItem(i)"
+                    (keydown)="onPickerKeydown($event)"
+                    [attr.aria-label]="item.title">
+                    <span class="hero-indicator-art">
+                        <img [src]="poster ? posterFor(item) : thumbFor(item)" alt="" loading="lazy" decoding="async">
+                    </span>
+                    <span class="hero-progress" aria-hidden="true">
+                        @if (i === activeIndex()) {
+                            @for (c of [cycle()]; track c) {
+                                <span class="hero-progress-bar" [style.animation-duration.ms]="rotationMs"></span>
+                            }
+                        }
+                    </span>
+                </button>
+            }
+        </div>
+    }
+</ng-template>
+
 @if (loaded() && activeItem()) {
-    <div class="hero-banner" [style.background-image]="'url(' + backdropUrl() + ')'">
-        <div class="hero-overlay">
-            <div class="hero-content">
-                <h1 class="hero-title">{{ activeItem().title }}</h1>
-                <div class="hero-meta">
-                    @if (activeItem().year) {
-                        <span class="hero-year">{{ activeItem().year }}</span>
+    @switch (variant()) {
+        @case ('aurora') {
+            <section class="hero hero--aurora" [class.is-halted]="rotationHalted()"
+                aria-roledescription="carousel" [attr.aria-label]="'Discovery.Featured' | translate"
+                (mouseenter)="setHovering(true)" (mouseleave)="setHovering(false)"
+                (focusin)="setHovering(true)" (focusout)="onFocusOut($event)"
+                (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+
+                <!-- Ambient wash sampled from the artwork; fixed behind the whole page -->
+                <div class="aurora-ambient" aria-hidden="true">
+                    @for (item of items(); track item.id; let i = $index) {
+                        <img class="aurora-ambient-img" [class.is-active]="i === activeIndex()" [src]="thumbFor(item)" alt="">
                     }
-                    @if (activeItem().rating) {
-                        <span class="hero-rating">
-                            <i class="fas fa-star" aria-hidden="true"></i> {{ getRatingDisplay() }}
-                        </span>
+                    <span class="aurora-blob aurora-blob--a"></span>
+                    <span class="aurora-blob aurora-blob--b"></span>
+                    <span class="aurora-blob aurora-blob--c"></span>
+                    <span class="aurora-grain"></span>
+                </div>
+
+                <div class="stage" ombiTilt>
+                    <div class="stage-media" aria-hidden="true">
+                        <ng-container [ngTemplateOutlet]="slides"></ng-container>
+                        <div class="stage-scrim"></div>
+                    </div>
+
+                    <div class="stage-body">
+                        @for (item of activeItems(); track item.id) {
+                            <div class="stage-panel hero-copy">
+                                <ng-container [ngTemplateOutlet]="copy" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+                            </div>
+                            @if (item.posterPath) {
+                                <a class="stage-poster" [routerLink]="getDetailsLink()" tabindex="-1" aria-hidden="true">
+                                    <img [src]="posterFor(item)" alt="" decoding="async">
+                                    <span class="stage-poster-glare"></span>
+                                </a>
+                            }
+                        }
+                    </div>
+
+                    <div class="stage-picker">
+                        <ng-container [ngTemplateOutlet]="picker" [ngTemplateOutletContext]="{ poster: true }"></ng-container>
+                    </div>
+                </div>
+            </section>
+        }
+        @default {
+            <section class="hero hero--cinema" [class.is-halted]="rotationHalted()"
+                aria-roledescription="carousel" [attr.aria-label]="'Discovery.Featured' | translate"
+                (mouseenter)="setHovering(true)" (mouseleave)="setHovering(false)"
+                (focusin)="setHovering(true)" (focusout)="onFocusOut($event)"
+                (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+
+                <div class="cinema-media" aria-hidden="true">
+                    <ng-container [ngTemplateOutlet]="slides"></ng-container>
+                    <div class="cinema-scrim"></div>
+                    <div class="cinema-grain"></div>
+                </div>
+
+                <div class="cinema-body">
+                    @for (item of activeItems(); track item.id) {
+                        <div class="cinema-copy hero-copy">
+                            <ng-container [ngTemplateOutlet]="copy" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+                        </div>
                     }
                 </div>
-                <p class="hero-overview">{{ activeItem().overview }}</p>
-                <div class="hero-actions">
-                    <a [routerLink]="getDetailsLink()" class="hero-cta">
-                        <i class="fas fa-info-circle" aria-hidden="true"></i>
-                        {{ 'Discovery.ViewDetails' | translate }}
-                    </a>
+
+                <div class="cinema-picker">
+                    <ng-container [ngTemplateOutlet]="picker" [ngTemplateOutletContext]="{ poster: false }"></ng-container>
                 </div>
-            </div>
-            <div class="hero-indicators">
-                @if (items().length > 1) {
-                    <button
-                        type="button"
-                        class="hero-pause-btn"
-                        [attr.aria-pressed]="paused()"
-                        (click)="togglePause()"
-                        [attr.aria-label]="paused() ? 'Play slideshow' : 'Pause slideshow'">
-                        <i [class]="paused() ? 'fas fa-play' : 'fas fa-pause'" aria-hidden="true"></i>
-                    </button>
-                }
-                @for (item of items(); track item.id; let i = $index) {
-                    <button
-                        type="button"
-                        class="hero-indicator"
-                        [class.active]="i === activeIndex()"
-                        [attr.aria-pressed]="i === activeIndex()"
-                        (click)="selectItem(i)"
-                        [attr.aria-label]="item.title">
-                    </button>
-                }
+            </section>
+        }
+    }
+} @else if (!failed()) {
+    <!-- Reserve the hero's space while it loads so the page does not jump -->
+    <section class="hero hero--placeholder" [class.hero--aurora]="variant() === 'aurora'" [class.hero--cinema]="variant() !== 'aurora'" aria-hidden="true">
+        <div class="placeholder-frame dx-skeleton">
+            <div class="placeholder-copy">
+                <span class="placeholder-line placeholder-line--eyebrow"></span>
+                <span class="placeholder-line placeholder-line--title"></span>
+                <span class="placeholder-line placeholder-line--text"></span>
+                <span class="placeholder-line placeholder-line--text short"></span>
             </div>
         </div>
-    </div>
+    </section>
 }

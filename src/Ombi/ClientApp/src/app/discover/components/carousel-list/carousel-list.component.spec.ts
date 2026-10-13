@@ -392,3 +392,98 @@ describe('CarouselListComponent', () => {
     });
   });
 });
+
+describe('CarouselListComponent paging and mode switching', () => {
+  let mockSearchService: any;
+
+  const page = (start: number, count = 20) =>
+    Array.from({ length: count }, (_, i) => makeMovie({ id: start + i, title: `Movie ${start + i}` }));
+
+  beforeEach(() => {
+    mockSearchService = {
+      popularMoviesByPage: vi.fn().mockResolvedValue([]),
+      nowPlayingMoviesByPage: vi.fn().mockResolvedValue([]),
+      upcomingMoviesByPage: vi.fn().mockResolvedValue([]),
+      recentlyRequestedMoviesByPage: vi.fn().mockResolvedValue([]),
+      seasonalMoviesByPage: vi.fn().mockResolvedValue([]),
+      popularTvByPage: vi.fn().mockResolvedValue([]),
+      trendingTvByPage: vi.fn().mockResolvedValue([]),
+      anticipatedTvByPage: vi.fn().mockResolvedValue([]),
+    };
+  });
+
+  it('loadMore appends the next page at the current offset', async () => {
+    mockSearchService.popularMoviesByPage.mockImplementation((offset: number) => Promise.resolve(page(offset)));
+    const { component } = createComponent(mockSearchService);
+    setupInputs(component, DiscoverType.Popular, DiscoverOption.Movie);
+    await component.ngOnInit();
+    expect(component.totalResults()).toBe(20);
+
+    await component.loadMore();
+
+    expect(mockSearchService.popularMoviesByPage).toHaveBeenLastCalledWith(20, 20);
+    expect(component.totalResults()).toBe(40);
+    expect(component.discoverResults()[20].id).toBe(20);
+    expect(component.loadingMore()).toBe(false);
+  });
+
+  it('ignores loadMore while a page is already loading', async () => {
+    mockSearchService.popularMoviesByPage.mockImplementation((offset: number) => Promise.resolve(page(offset)));
+    const { component } = createComponent(mockSearchService);
+    setupInputs(component, DiscoverType.Popular, DiscoverOption.Movie);
+    await component.ngOnInit();
+
+    await Promise.all([component.loadMore(), component.loadMore()]);
+
+    expect(mockSearchService.popularMoviesByPage).toHaveBeenCalledTimes(2);
+    expect(component.totalResults()).toBe(40);
+  });
+
+  it('stops paging once a page adds nothing', async () => {
+    mockSearchService.popularMoviesByPage.mockImplementation((offset: number) => Promise.resolve(offset === 0 ? page(0) : []));
+    const { component } = createComponent(mockSearchService);
+    setupInputs(component, DiscoverType.Popular, DiscoverOption.Movie);
+    await component.ngOnInit();
+
+    await component.loadMore();
+    await component.loadMore();
+
+    expect(mockSearchService.popularMoviesByPage).toHaveBeenCalledTimes(2);
+    expect(component.totalResults()).toBe(20);
+  });
+
+  it('selectOption swaps the results, resets paging and saves the choice', async () => {
+    mockSearchService.popularMoviesByPage.mockResolvedValue(page(0));
+    mockSearchService.popularTvByPage.mockResolvedValue([makeTvShow({ id: 900 })]);
+    const { component, mockStorageService } = createComponent(mockSearchService);
+    setupInputs(component, DiscoverType.Popular, DiscoverOption.Movie);
+    await component.ngOnInit();
+
+    await component.selectOption(DiscoverOption.Tv);
+
+    expect(component.discoverOptions()).toBe(DiscoverOption.Tv);
+    expect(component.optionIndex()).toBe(2);
+    expect(component.discoverResults().map(r => r.id)).toEqual([900]);
+    expect(mockSearchService.popularTvByPage).toHaveBeenLastCalledWith(0, 20);
+    expect(mockStorageService.save).toHaveBeenCalledWith('DiscoverOptions2', DiscoverOption.Tv.toString());
+    expect(component.loadingFlag()).toBe(false);
+  });
+
+  it('drops a page that arrives after the mode was switched', async () => {
+    let resolveSlowPage: (value: any) => void;
+    mockSearchService.popularMoviesByPage
+      .mockResolvedValueOnce(page(0))
+      .mockImplementationOnce(() => new Promise(r => { resolveSlowPage = r; }));
+    mockSearchService.popularTvByPage.mockResolvedValue([makeTvShow({ id: 900 })]);
+    const { component } = createComponent(mockSearchService);
+    setupInputs(component, DiscoverType.Popular, DiscoverOption.Movie);
+    await component.ngOnInit();
+
+    const pending = component.loadMore();
+    await component.selectOption(DiscoverOption.Tv);
+    resolveSlowPage(page(20));
+    await pending;
+
+    expect(component.discoverResults().map(r => r.id)).toEqual([900]);
+  });
+});

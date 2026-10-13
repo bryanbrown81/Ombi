@@ -1,0 +1,159 @@
+// Card request action, Aurora glare, touch and responsive rules.
+// ─── Request action ──────────────────────────────────────
+.card-actions {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    z-index: 4;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate3d(0, 12px, 0);
+    pointer-events: none;
+    transition:
+        opacity 0.4s var(--dx-ease-out) 60ms,
+        visibility 0.4s var(--dx-ease-out) 60ms,
+        transform 0.6s var(--dx-ease-out) 60ms;
+}
+
+.card-inner:hover .card-actions,
+.card-inner:focus-within .card-actions {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+}
+
+.request-btn {
+    width: 100%;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 12px;
+    border: none;
+    border-radius: var(--dx-control-radius);
+    background: #fff;
+    color: #0b1015;
+    font-family: var(--dx-font);
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.8);
+    transition:
+        transform 0.25s var(--dx-ease-out),
+        background-color 0.2s ease,
+        box-shadow 0.25s ease;
+
+    i {
+        font-size: 0.72rem;
+    }
+
+    .request-btn-caret {
+        margin-left: 2px;
+        font-size: 0.6rem;
+        opacity: 0.6;
+    }
+
+    &:hover {
+        transform: translate3d(0, -1px, 0);
+        background: #eaf8ff;
+        box-shadow: 0 14px 28px -10px rgba(var(--dx-accent-rgb), 0.55);
+    }
+
+    &:active {
+        transform: scale(0.97);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--dx-accent);
+        outline-offset: 2px;
+    }
+
+    &.is-loading {
+        pointer-events: none;
+        opacity: 0.85;
+    }
+}
+
+.request-menu-item {
+    font-size: 0.85rem;
+}
+
+// ─── Glare (Aurora tilt) ─────────────────────────────────
+.card-glare {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 0%), rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 55%);
+    mix-blend-mode: overlay;
+    transition: opacity 0.4s var(--dx-ease-out);
+}
+
+// Caption is only used by the Editorial design
+.card-caption {
+    display: none;
+}
+
+// ─── Touch & small screens ───────────────────────────────
+@media screen and (max-width: 480px) {
+    .overlay-overview {
+        display: none;
+    }
+
+    .status-badge .status-label {
+        display: none;
+    }
+
+    .status-badge {
+        padding: 0 7px;
+    }
+}
+
+@media (hover: none) and (max-width: 1900px), (pointer: coarse) and (max-width: 1900px) {
+    .card-inner {
+        .card-overlay {
+            opacity: 1;
+            background: linear-gradient(to top, rgba(6, 9, 13, 0.88) 0%, rgba(6, 9, 13, 0) 60%);
+        }
+
+        .overlay-content > * {
+            opacity: 1;
+            transform: none;
+        }
+
+        .overlay-overview {
+            display: none;
+        }
+
+        .card-actions {
+            opacity: 1;
+            visibility: visible;
+            transform: none;
+            pointer-events: auto;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card-inner,
+    .card-inner:hover,
+    .card-inner:focus-within {
+        transform: none;
+    }
+
+    .card-media::before,
+    .status-badge.available .status-dot::after {
+        animation: none;
+    }
+
+    .card-media ::ng-deep .card-poster {
+        transform: none;
+        transition: opacity 0.3s linear;
+    }
+}

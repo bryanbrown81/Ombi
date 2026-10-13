@@ -1,0 +1,101 @@
+@let c = ctrl();
+<div class="sp" [class.sp--hero]="variant() === 'hero'" (mousedown)="keepFocus($event)">
+    @if (!c.term()) {
+        @if (c.recents().length) {
+            <div class="sp-head">
+                <span class="sp-label">{{ 'Discovery.Search.Recent' | translate }}</span>
+                <button type="button" class="sp-link" tabindex="-1" (click)="c.clearRecents()">{{ 'Discovery.Search.Clear' | translate }}</button>
+            </div>
+        } @else {
+            <div class="sp-hint">
+                <span class="sp-hint-icon" aria-hidden="true"><i class="fas fa-magnifying-glass"></i></span>
+                <div>
+                    <div class="sp-hint-title">{{ 'Discovery.Search.HintTitle' | translate }}</div>
+                    <div class="sp-hint-text">{{ 'Discovery.Search.HintText' | translate }}</div>
+                </div>
+            </div>
+        }
+    } @else if (c.term().length < minChars) {
+        <div class="sp-hint sp-hint--compact">{{ 'Discovery.Search.KeepTyping' | translate }}</div>
+    } @else {
+        <div class="sp-head">
+            <span class="sp-label">{{ 'Discovery.Search.TopResults' | translate }}</span>
+            @if (c.loading()) {
+                <span class="sp-loader" aria-hidden="true"></span>
+            }
+        </div>
+        @if (!c.results().length && c.loading()) {
+            <div class="sp-skeletons" aria-hidden="true">
+                @for (row of [1, 2, 3, 4]; track row) {
+                    <div class="sp-skeleton-row" [style.--i]="row">
+                        <span class="dx-skeleton sp-skeleton-thumb"></span>
+                        <span class="sp-skeleton-lines">
+                            <span class="dx-skeleton sp-skeleton-line"></span>
+                            <span class="dx-skeleton sp-skeleton-line short"></span>
+                        </span>
+                    </div>
+                }
+            </div>
+        } @else if (!c.results().length) {
+            <div class="sp-none">{{ 'Discovery.Search.NoQuickMatches' | translate: { term: c.term() } }}</div>
+        }
+    }
+
+    <ul class="sp-list" role="listbox" [id]="c.listboxId" [class.is-empty]="!c.options().length" [class.is-stale]="c.stale()"
+        [attr.aria-label]="'NavigationBar.Search' | translate">
+        @for (option of c.options(); track option.id; let i = $index) {
+            @switch (option.kind) {
+                @case ('recent') {
+                    <li class="sp-option sp-option--recent" role="option" [id]="option.id"
+                        [attr.aria-selected]="i === c.activeIndex()" [class.is-active]="i === c.activeIndex()"
+                        (mouseenter)="c.activeIndex.set(i)" (click)="c.activate(option)">
+                        <span class="sp-option-icon" aria-hidden="true"><i class="fas fa-clock-rotate-left"></i></span>
+                        <span class="sp-option-title">{{ option.term }}</span>
+                        <button type="button" class="sp-remove" tabindex="-1" [attr.aria-label]="'Discovery.Search.Remove' | translate"
+                            (click)="$event.stopPropagation(); c.removeRecent(option.term)">
+                            <i class="fas fa-xmark" aria-hidden="true"></i>
+                        </button>
+                    </li>
+                }
+                @case ('result') {
+                    <li class="sp-option sp-option--result" role="option" [id]="option.id" [style.--i]="i"
+                        [attr.aria-selected]="i === c.activeIndex()" [class.is-active]="i === c.activeIndex()"
+                        (mouseenter)="c.activeIndex.set(i)" (click)="c.activate(option)">
+                        <span class="sp-thumb" aria-hidden="true">
+                            @if (option.result.poster) {
+                                <img [src]="option.result.poster" alt="" loading="lazy" decoding="async">
+                            } @else {
+                                <i [class]="option.result.icon"></i>
+                            }
+                        </span>
+                        <span class="sp-option-body">
+                            <span class="sp-option-title">{{ option.result.title }}</span>
+                            <span class="sp-option-meta">
+                                <span class="sp-type">{{ option.result.typeKey | translate }}</span>
+                                @if (option.result.overview) {
+                                    <span class="sp-option-overview">{{ option.result.overview }}</span>
+                                }
+                            </span>
+                        </span>
+                        <span class="sp-enter" aria-hidden="true"><i class="fas fa-arrow-turn-down fa-rotate-90"></i></span>
+                    </li>
+                }
+                @case ('all') {
+                    <li class="sp-option sp-option--all" role="option" [id]="option.id"
+                        [attr.aria-selected]="i === c.activeIndex()" [class.is-active]="i === c.activeIndex()"
+                        (mouseenter)="c.activeIndex.set(i)" (click)="c.activate(option)">
+                        <span class="sp-option-icon" aria-hidden="true"><i class="fas fa-magnifying-glass"></i></span>
+                        <span class="sp-option-title">{{ 'Discovery.Search.SeeAll' | translate: { term: option.term } }}</span>
+                        <span class="sp-enter" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                    </li>
+                }
+            }
+        }
+    </ul>
+
+    <div class="sp-foot" aria-hidden="true">
+        <span><kbd>↑</kbd><kbd>↓</kbd> {{ 'Discovery.Search.Navigate' | translate }}</span>
+        <span><kbd>↵</kbd> {{ 'Discovery.Search.Open' | translate }}</span>
+        <span><kbd>esc</kbd> {{ 'Discovery.Search.Dismiss' | translate }}</span>
+    </div>
+</div>

@@ -1,21 +1,82 @@
-<div class="small-middle-container" >
-    <div *ngIf="loadingFlag" class="row justify-content-md-center top-spacing loading-spinner">
-        <mat-spinner [color]="'accent'"></mat-spinner>
-    </div>
+<div class="results">
+    @if (refreshing() || loadingMore()) {
+        <div class="results-progress" role="progressbar" [attr.aria-label]="'Discovery.Results.Loading' | translate">
+            <span class="results-progress-bar"></span>
+        </div>
+    }
 
-    <div *ngIf="discoverResults.length > 0"
-      class="row full-height discoverResults col"
-      infiniteScroll
-      [infiniteScrollDistance]="3"
-      [infiniteScrollThrottle]="200"
-      (scrolled)="onScroll()">
-        <div id="searchResults" class="col-xl-2 col-lg-3 col-md-3 col-6 col-sm-4 small-padding card-container" *ngFor="let result of discoverResults" data-test="searchResultsCount" attr.search-count="{{discoverResults.length}}">
-            <discover-card [isAdmin]="isAdmin" [result]="result" [is4kEnabled]="is4kEnabled"></discover-card>
+    <header class="results-header">
+        <p class="results-eyebrow">
+            {{ (isAdvancedSearch() ? 'Discovery.Results.Browse' : 'Discovery.Results.Eyebrow') | translate }}
+        </p>
+        <h1 class="results-title">
+            @if (isAdvancedSearch()) {
+                {{ advancedLabel() || ('Search.AdvancedSearchHeader' | translate) }}
+            } @else if (searchTerm().trim()) {
+                <span class="results-quote" aria-hidden="true">“</span>{{ searchTerm().trim() }}<span class="results-quote" aria-hidden="true">”</span>
+            } @else {
+                {{ 'Discovery.Results.Everything' | translate }}
+            }
+        </h1>
+
+        @if (hasResults() && tabs().length <= 2) {
+            <p class="results-count">{{ 'Discovery.Results.Count' | translate: { count: discoverResults().length } }}</p>
+        } @else if (hasResults()) {
+            <div class="results-toolbar">
+                <div class="dx-seg results-tabs" role="tablist" [attr.aria-label]="'Discovery.Results.FilterLabel' | translate"
+                    [style.--seg-count]="tabs().length" [style.--seg-index]="tabIndex()">
+                    <span class="dx-seg__indicator" aria-hidden="true"></span>
+                    @for (tab of tabs(); track tab.id) {
+                        <span class="dx-seg__cell" [class.filter-active]="effectiveTab() === tab.id">
+                            <button type="button" role="tab" class="dx-seg__btn"
+                                [attr.aria-selected]="effectiveTab() === tab.id"
+                                (click)="selectTab(tab.id)">
+                                {{ tab.labelKey | translate }}<span class="results-tab-count">{{ tab.count }}</span>
+                            </button>
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+    </header>
+
+    @if (showSkeleton()) {
+        <div class="results-grid" aria-hidden="true">
+            @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]; track item) {
+                <div class="results-cell results-skeleton" [style.--i]="item">
+                    <div class="dx-skeleton results-skeleton-poster"></div>
+                </div>
+            }
         </div>
-    </div>
-    <div *ngIf="!loadingFlag && discoverResults.length === 0">
-        <div class="row justify-content-md-center top-spacing loading-spinner">
-            <h1 id="noSearchResult"> {{'Discovery.NoSearch' | translate}} <i class="far fa-frown" aria-hidden="true"></i></h1>
+    } @else if (hasResults()) {
+        <div id="searchResults" class="results-grid" [class.is-refreshing]="refreshing()" [attr.aria-busy]="refreshing()"
+            data-test="searchResultsCount" [attr.search-count]="discoverResults().length"
+            infiniteScroll
+            [infiniteScrollDistance]="2"
+            [infiniteScrollThrottle]="200"
+            [infiniteScrollDisabled]="!isAdvancedSearch()"
+            (scrolled)="onScroll()">
+            @for (result of visibleResults(); track result; let i = $index) {
+                <div class="results-cell" [style.--i]="i % 24">
+                    <discover-card [isAdmin]="isAdmin" [result]="result" [is4kEnabled]="is4kEnabled"></discover-card>
+                </div>
+            }
+            @if (loadingMore()) {
+                @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+                    <div class="results-cell results-skeleton" aria-hidden="true">
+                        <div class="dx-skeleton results-skeleton-poster"></div>
+                    </div>
+                }
+            }
         </div>
-    </div>
+    } @else if (showEmpty()) {
+        <div class="results-empty">
+            <div class="results-empty-art" aria-hidden="true">
+                <span class="results-empty-ring"></span>
+                <i class="fas fa-magnifying-glass"></i>
+            </div>
+            <h2 id="noSearchResult" class="results-empty-title">{{ 'Discovery.NoSearch' | translate }}</h2>
+            <p class="results-empty-text">{{ 'Discovery.Results.EmptyHint' | translate }}</p>
+        </div>
+    }
 </div>

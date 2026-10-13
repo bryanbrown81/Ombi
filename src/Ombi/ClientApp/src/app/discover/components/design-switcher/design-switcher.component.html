@@ -1,0 +1,25 @@
+@if (collapsed()) {
+    <button type="button" class="ds-fab" (click)="setCollapsed(false)" [attr.aria-label]="'Discovery.Designs.Show' | translate">
+        <i class="fas fa-palette" aria-hidden="true"></i>
+    </button>
+} @else {
+    <div class="ds" role="group" [attr.aria-label]="'Discovery.Designs.Label' | translate">
+        <span class="ds-label">
+            <i class="fas fa-palette" aria-hidden="true"></i>
+            {{ 'Discovery.Designs.Label' | translate }}
+        </span>
+        <div class="ds-seg" [style.--ds-index]="activeIndex()" [style.--ds-count]="designs.length">
+            <span class="ds-indicator" aria-hidden="true"></span>
+            @for (option of designs; track option.id) {
+                <button type="button" class="ds-option" [class.is-active]="design() === option.id"
+                    [attr.aria-pressed]="design() === option.id" (click)="select(option.id)">
+                    <i [class]="option.icon" aria-hidden="true"></i>
+                    <span>{{ option.labelKey | translate }}</span>
+                </button>
+            }
+        </div>
+        <button type="button" class="ds-close" (click)="setCollapsed(true)" [attr.aria-label]="'Discovery.Designs.Hide' | translate">
+            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+        </button>
+    </div>
+}

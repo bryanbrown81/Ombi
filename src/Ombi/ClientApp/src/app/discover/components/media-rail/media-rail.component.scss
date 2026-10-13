@@ -1,0 +1,203 @@
+// Global (ViewEncapsulation.None) so projected `.ombi-rail__item` children can be styled.
+// Every selector is namespaced with `ombi-rail`.
+
+@property --dx-fade-start {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+}
+
+@property --dx-fade-end {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+}
+
+ombi-media-rail {
+    display: block;
+}
+
+.ombi-rail {
+    // Vertical breathing room so hover lift and shadows are not clipped by the scroller.
+    --rail-room: 32px;
+    --rail-nav-size: 46px;
+    position: relative;
+    // Bleed to the page edges; the track re-applies the gutter as padding so the first
+    // card still lines up with the section title.
+    margin-inline: calc(var(--dx-gutter) * -1);
+}
+
+.ombi-rail__viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--dx-gutter);
+    scrollbar-width: none;
+    padding-block: var(--rail-room);
+    margin-block: calc(var(--rail-room) * -1);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--dx-fade-start), #000 calc(100% - var(--dx-fade-end)), transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 var(--dx-fade-start), #000 calc(100% - var(--dx-fade-end)), transparent 100%);
+    transition: --dx-fade-start 0.45s var(--dx-ease-out), --dx-fade-end 0.45s var(--dx-ease-out);
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.ombi-rail--can-prev .ombi-rail__viewport {
+    --dx-fade-start: var(--dx-gutter);
+}
+
+.ombi-rail--can-next .ombi-rail__viewport {
+    --dx-fade-end: var(--dx-gutter);
+}
+
+.ombi-rail__track {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--dx-card-gap);
+    width: max-content;
+    min-width: 100%;
+    padding-inline: var(--dx-gutter);
+    box-sizing: border-box;
+}
+
+.ombi-rail__item {
+    position: relative;
+    flex: 0 0 var(--rail-item-w, var(--dx-card-w));
+    min-width: 0;
+    scroll-snap-align: start;
+    animation: dx-rail-in 0.8s var(--dx-ease-out) backwards;
+    animation-delay: calc(var(--i, 0) * 45ms);
+
+    &:hover,
+    &:focus-within {
+        z-index: 2;
+    }
+}
+
+@keyframes dx-rail-in {
+    from {
+        opacity: 0;
+        transform: translate3d(28px, 0, 0);
+    }
+}
+
+// ─── Paging buttons ─────────────────────────────────────
+.ombi-rail__nav {
+    position: absolute;
+    top: var(--rail-nav-top, 50%);
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    width: var(--rail-nav-size);
+    height: var(--rail-nav-size);
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 50%;
+    background: rgba(10, 15, 21, 0.62);
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
+    backdrop-filter: blur(16px) saturate(170%);
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    opacity: 0;
+    translate: 0 -50%;
+    scale: 0.82;
+    box-shadow: 0 14px 34px -12px rgba(0, 0, 0, 0.75);
+    transition:
+        opacity 0.3s var(--dx-ease-out),
+        scale 0.45s var(--dx-ease-out),
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+
+    &--prev {
+        left: max(8px, calc(var(--dx-gutter) / 2 - var(--rail-nav-size) / 2));
+    }
+
+    &--next {
+        right: max(8px, calc(var(--dx-gutter) / 2 - var(--rail-nav-size) / 2));
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.32);
+        scale: 1.08;
+    }
+
+    &:active {
+        scale: 0.96;
+    }
+
+    &:disabled {
+        opacity: 0 !important;
+        pointer-events: none;
+    }
+}
+
+.ombi-rail:hover .ombi-rail__nav:not(:disabled) {
+    opacity: 1;
+    scale: 1;
+}
+
+.ombi-rail:hover .ombi-rail__nav:not(:disabled):hover {
+    scale: 1.08;
+}
+
+// ─── Design variants ────────────────────────────────────
+html[data-discover-design="editorial"] {
+    .ombi-rail {
+        --rail-nav-size: 42px;
+        // Captions sit under editorial posters, so centre the buttons on the artwork.
+        --rail-nav-top: calc(var(--dx-card-w) * 0.75);
+    }
+
+    .ombi-rail__nav {
+        border-radius: 2px;
+        border-color: rgba(244, 241, 234, 0.22);
+        background: rgba(12, 12, 13, 0.82);
+        color: var(--dx-text);
+        font-size: 13px;
+
+        &:hover {
+            background: var(--dx-text);
+            color: #0c0c0d;
+        }
+    }
+}
+
+html[data-discover-design="aurora"] {
+    .ombi-rail__nav {
+        border-color: rgba(255, 255, 255, 0.22);
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06));
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.35),
+            0 18px 40px -14px rgba(0, 0, 0, 0.7);
+
+        &:hover {
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0.12));
+        }
+    }
+}
+
+@media (hover: none), (pointer: coarse) {
+    .ombi-rail__nav {
+        display: none;
+    }
+
+    .ombi-rail__viewport {
+        // Touch scrolling feels better without hard snapping.
+        scroll-snap-type: x proximity;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ombi-rail__item {
+        animation: none;
+    }
+
+    .ombi-rail__viewport {
+        transition: none;
+    }
+}

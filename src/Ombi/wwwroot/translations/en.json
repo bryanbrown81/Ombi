@@ -454,7 +454,57 @@
             "Writer": "Writer",
             "ExecProducer": "Exec Producer"
         },
-        "NoSearch":"Sorry, nothing matches your search!"
+        "NoSearch":"Sorry, nothing matches your search!",
+        "NowPlaying": "Now Playing",
+        "Featured": "Featured",
+        "PlaySlideshow": "Play slideshow",
+        "PauseSlideshow": "Pause slideshow",
+        "BrowseGenres": "Browse by genre",
+        "Designs": {
+            "Label": "Design",
+            "Cinema": "Cinema",
+            "Editorial": "Editorial",
+            "Aurora": "Aurora",
+            "Show": "Show design switcher",
+            "Hide": "Hide design switcher"
+        },
+        "Spotlight": {
+            "Morning": "Good morning",
+            "Afternoon": "Good afternoon",
+            "Evening": "Good evening",
+            "MorningNamed": "Good morning, {{name}}",
+            "AfternoonNamed": "Good afternoon, {{name}}",
+            "EveningNamed": "Good evening, {{name}}",
+            "Title": "What will you <em>watch</em> next?",
+            "Subtitle": "Search every movie and show, then request it in a single click.",
+            "Placeholder": "Search films, series, people…",
+            "Trending": "Trending now"
+        },
+        "Search": {
+            "Recent": "Recent searches",
+            "Clear": "Clear",
+            "Remove": "Remove from recent searches",
+            "ClearQuery": "Clear search",
+            "HintTitle": "Find something to watch",
+            "HintText": "Search movies, TV shows and more. Press / anywhere to jump here.",
+            "KeepTyping": "Keep typing…",
+            "TopResults": "Top results",
+            "NoQuickMatches": "No quick matches for “{{term}}”. Press Enter to search everything.",
+            "SeeAll": "See all results for “{{term}}”",
+            "Navigate": "Navigate",
+            "Open": "Open",
+            "Dismiss": "Close"
+        },
+        "Results": {
+            "Eyebrow": "Search results",
+            "Browse": "Browse",
+            "Everything": "Everything",
+            "All": "All",
+            "Count": "{{count}} titles",
+            "FilterLabel": "Filter results by type",
+            "Loading": "Loading results",
+            "EmptyHint": "Check the spelling, try a shorter title, or switch on more types with the filters at the top of the page."
+        }
     },
     "UserPreferences": {
         "Welcome": "Welcome {{username}}!",

@@ -1,0 +1,116 @@
+<section class="spot" [class.is-ready]="wallRows().length > 0">
+    <div class="spot-wall-clip" aria-hidden="true">
+        <div class="spot-wall">
+            @for (row of wallRows(); track $index; let r = $index) {
+                <div class="spot-row" [style.animation-duration.s]="96 + r * 22">
+                    @for (src of row; track $index) {
+                        <img [src]="src" alt="" decoding="async" (load)="markLoaded($event)">
+                    }
+                </div>
+            }
+        </div>
+    </div>
+    <div class="spot-veil" aria-hidden="true"></div>
+
+    <div class="spot-inner">
+        <p class="spot-eyebrow">
+            @if (userName) {
+                {{ greetingKey + 'Named' | translate: { name: userName } }}
+            } @else {
+                {{ greetingKey | translate }}
+            }
+        </p>
+        <h1 class="spot-title" [innerHTML]="'Discovery.Spotlight.Title' | translate"></h1>
+        <p class="spot-sub">{{ 'Discovery.Spotlight.Subtitle' | translate }}</p>
+
+        <div class="spot-search" [class.is-open]="ctrl.panelVisible()">
+            <form class="spot-field" role="search" (submit)="$event.preventDefault(); submit()">
+                <span class="spot-field-icon" aria-hidden="true">
+                    @if (ctrl.loading()) {
+                        <span class="spot-spinner"></span>
+                    } @else {
+                        <i class="fas fa-magnifying-glass"></i>
+                    }
+                </span>
+                <input
+                    #searchInput
+                    id="discover-spotlight-search"
+                    class="spot-input"
+                    type="text"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    [attr.aria-label]="'NavigationBar.Search' | translate"
+                    [attr.aria-expanded]="ctrl.panelVisible()"
+                    [attr.aria-controls]="ctrl.listboxId"
+                    [attr.aria-activedescendant]="ctrl.panelVisible() ? ctrl.activeOptionId() : null"
+                    [placeholder]="'Discovery.Spotlight.Placeholder' | translate"
+                    [value]="ctrl.query()"
+                    (input)="ctrl.setQuery($any($event.target).value)"
+                    (keydown)="onKeydown($event)"
+                    (focus)="onFocus()"
+                    (blur)="ctrl.close()"
+                    autocomplete="off"
+                    spellcheck="false">
+                @if (ctrl.query()) {
+                    <button type="button" class="spot-clear" (click)="clear()" (mousedown)="$event.preventDefault()"
+                        [attr.aria-label]="'Discovery.Search.ClearQuery' | translate">
+                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                    </button>
+                } @else {
+                    <kbd class="spot-kbd" aria-hidden="true">/</kbd>
+                }
+                <button type="submit" class="spot-go">
+                    <span>{{ 'Common.Search' | translate }}</span>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            @if (ctrl.panelVisible()) {
+                <ombi-search-panel class="spot-panel" [ctrl]="ctrl" variant="hero"></ombi-search-panel>
+            }
+        </div>
+
+        @if (trending().length) {
+            <div class="spot-trending">
+                <span class="spot-trending-label">{{ 'Discovery.Spotlight.Trending' | translate }}</span>
+                @for (item of trending(); track item.id) {
+                    <a class="spot-trending-link" [routerLink]="['/details/movie', item.id]">{{ item.title }}</a>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+@if (featured().length) {
+    <section class="feature" ombiReveal>
+        <header class="dx-section-head">
+            @if (featureIndex()) {
+                <span class="dx-section-index">{{ featureIndex() }}</span>
+            }
+            <h2 class="dx-section-title">{{ 'Discovery.NowPlaying' | translate }}</h2>
+            <span class="dx-section-rule" aria-hidden="true"></span>
+        </header>
+        <div class="bento">
+            @for (item of featured(); track item.id; let i = $index) {
+                <a class="bento-tile" [class.bento-tile--lead]="i === 0" [routerLink]="['/details/movie', item.id]">
+                    <img class="bento-img" [src]="i === 0 ? item.backdropLarge : item.backdrop" alt="" loading="lazy" decoding="async">
+                    <span class="bento-shade" aria-hidden="true"></span>
+                    <span class="bento-copy">
+                        <span class="bento-kicker">
+                            {{ item.year }}
+                            @if (item.rating) {
+                                <span class="bento-sep">·</span>
+                                <i class="fas fa-star" aria-hidden="true"></i> {{ item.rating }}
+                            }
+                        </span>
+                        <span class="bento-title">{{ item.title }}</span>
+                        @if (i === 0 && item.overview) {
+                            <span class="bento-overview">{{ item.overview }}</span>
+                        }
+                    </span>
+                    <span class="bento-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                </a>
+            }
+        </div>
+    </section>
+}

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
-import { HeroBannerComponent } from './hero-banner.component';
+import { HeroBannerComponent, HERO_ROTATION_MS } from './hero-banner.component';
 import { SearchV2Service } from '../../../services';
 import { ISearchMovieResult, RequestType } from '../../../interfaces';
 
@@ -302,6 +302,95 @@ describe('HeroBannerComponent', () => {
 
       // Should not throw
       expect(() => component.ngOnDestroy()).not.toThrow();
+    });
+  });
+
+  describe('rotation', () => {
+    const threeMovies = () => [
+      makeMovie({ id: 1, title: 'First', backdropPath: '/1.jpg' }),
+      makeMovie({ id: 2, title: 'Second', backdropPath: '/2.jpg' }),
+      makeMovie({ id: 3, title: 'Third', backdropPath: '/3.jpg' }),
+    ];
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('advances after each interval and wraps around', async () => {
+      vi.useFakeTimers();
+      mockSearchService.nowPlayingMoviesByPage.mockResolvedValue(threeMovies());
+      await component.ngOnInit();
+
+      vi.advanceTimersByTime(HERO_ROTATION_MS);
+      expect(component.activeIndex()).toBe(1);
+      expect(component.previousIndex()).toBe(0);
+      vi.advanceTimersByTime(HERO_ROTATION_MS * 2);
+      expect(component.activeIndex()).toBe(0);
+    });
+
+    it('next and previous wrap in both directions', async () => {
+      mockSearchService.nowPlayingMoviesByPage.mockResolvedValue(threeMovies());
+      await component.ngOnInit();
+
+      component.previous();
+      expect(component.activeIndex()).toBe(2);
+      component.next();
+      expect(component.activeIndex()).toBe(0);
+    });
+
+    it('freezes while hovered and resumes with the remaining time', async () => {
+      vi.useFakeTimers();
+      mockSearchService.nowPlayingMoviesByPage.mockResolvedValue(threeMovies());
+      await component.ngOnInit();
+
+      vi.advanceTimersByTime(HERO_ROTATION_MS - 2000);
+      component.setHovering(true);
+      expect(component.rotationHalted()).toBe(true);
+      vi.advanceTimersByTime(HERO_ROTATION_MS * 3);
+      expect(component.activeIndex()).toBe(0);
+
+      component.setHovering(false);
+      vi.advanceTimersByTime(1999);
+      expect(component.activeIndex()).toBe(0);
+      vi.advanceTimersByTime(1);
+      expect(component.activeIndex()).toBe(1);
+    });
+
+    it('does not rotate while paused', async () => {
+      vi.useFakeTimers();
+      mockSearchService.nowPlayingMoviesByPage.mockResolvedValue(threeMovies());
+      await component.ngOnInit();
+
+      component.togglePause();
+      vi.advanceTimersByTime(HERO_ROTATION_MS * 3);
+      expect(component.activeIndex()).toBe(0);
+    });
+
+    it('gives a manually selected slide a full interval', async () => {
+      vi.useFakeTimers();
+      mockSearchService.nowPlayingMoviesByPage.mockResolvedValue(threeMovies());
+      await component.ngOnInit();
+
+      vi.advanceTimersByTime(HERO_ROTATION_MS - 1000);
+      component.selectItem(2);
+      vi.advanceTimersByTime(HERO_ROTATION_MS - 1);
+      expect(component.activeIndex()).toBe(2);
+      vi.advanceTimersByTime(1);
+      expect(component.activeIndex()).toBe(0);
+    });
+
+    it('swipes change slides on touch but ignore vertical drags', async () => {
+      mockSearchService.nowPlayingMoviesByPage.mockResolvedValue(threeMovies());
+      await component.ngOnInit();
+      const pointer = (x: number, y: number) => ({ pointerType: 'touch', clientX: x, clientY: y }) as PointerEvent;
+
+      component.onPointerDown(pointer(300, 100));
+      component.onPointerUp(pointer(200, 110));
+      expect(component.activeIndex()).toBe(1);
+
+      component.onPointerDown(pointer(300, 100));
+      component.onPointerUp(pointer(250, 300));
+      expect(component.activeIndex()).toBe(1);
     });
   });
 });

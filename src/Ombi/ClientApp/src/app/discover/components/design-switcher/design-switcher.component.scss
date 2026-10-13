@@ -1,0 +1,191 @@
+// Deliberately design-neutral: the switcher looks the same in every design.
+:host {
+    position: fixed;
+    z-index: 40;
+    left: 50%;
+    bottom: 22px;
+    translate: -50% 0;
+    font-family: Inter, Roboto, sans-serif;
+    view-transition-name: discover-design-switcher;
+}
+
+.ds {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 6px 6px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    background: rgba(12, 16, 22, 0.78);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 24px 60px -18px rgba(0, 0, 0, 0.9);
+    animation: ds-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes ds-in {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 16px, 0) scale(0.96);
+    }
+}
+
+.ds-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    white-space: nowrap;
+
+    i {
+        color: #62d2fa;
+    }
+}
+
+.ds-seg {
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    padding: 3px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    isolation: isolate;
+}
+
+.ds-indicator {
+    position: absolute;
+    z-index: -1;
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    width: calc((100% - 6px) / var(--ds-count, 3));
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.7);
+    transform: translateX(calc(var(--ds-index, 0) * 100%));
+    transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ds-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 34px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 999px;
+    background: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    i {
+        font-size: 0.72rem;
+    }
+
+    &:hover {
+        color: #fff;
+    }
+
+    &.is-active {
+        color: #0b1015;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #62d2fa;
+        outline-offset: 2px;
+    }
+}
+
+.ds-close,
+.ds-fab {
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.3s ease;
+
+    &:hover {
+        color: #fff;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #62d2fa;
+        outline-offset: 2px;
+    }
+}
+
+.ds-close {
+    width: 34px;
+    height: 34px;
+    background: none;
+    font-size: 0.72rem;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+.ds-fab {
+    width: 46px;
+    height: 46px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(12, 16, 22, 0.78);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    box-shadow: 0 18px 40px -14px rgba(0, 0, 0, 0.9);
+    font-size: 1rem;
+    animation: ds-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+    &:hover {
+        transform: scale(1.06);
+    }
+}
+
+@media (max-width: 640px) {
+    :host {
+        bottom: 14px;
+    }
+
+    .ds-label {
+        display: none;
+    }
+
+    .ds {
+        padding-left: 6px;
+    }
+
+    .ds-option {
+        padding: 0 11px;
+
+        span {
+            font-size: 0.74rem;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ds,
+    .ds-fab {
+        animation: none;
+    }
+
+    .ds-indicator {
+        transition: none;
+    }
+}

@@ -1,16 +1,26 @@
 
 <div id="result{{result.id}}" *ngIf="fullyLoaded" class="card-wrapper" [style.display]="hide ? 'none' : 'block'">
-    <div class="card-inner">
+    <div class="card-inner" ombiTilt="aurora" [class.has-actions]="!result.available && !result.approved && !result.requested && requestable">
         <!-- Single link wrapping poster and overlay -->
         <a [routerLink]="generateDetailsLink()" class="card-poster-link" [attr.aria-label]="result.title">
-            <ombi-image [src]="result.posterPath" [type]="result.type" class="card-poster" alt="{{result.title}}"></ombi-image>
+            <div class="card-media" [class.is-loaded]="posterLoaded">
+                <ombi-image [src]="result.posterPath" [type]="result.type" class="card-poster" alt="{{result.title}}" (loaded)="posterLoaded = true"></ombi-image>
+            </div>
             <div class="card-overlay">
                 <div class="overlay-content">
+                    @if (result.rating > 0) {
+                        <div class="overlay-rating">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            {{ result.rating | number: '1.1-1' }}
+                        </div>
+                    }
                     <div class="overlay-title" id="title{{result.id}}">{{result.title}}</div>
                     <div class="overlay-overview" id="overview{{result.id}}">{{result.overview}}</div>
                 </div>
             </div>
         </a>
+
+        <span class="card-glare" aria-hidden="true"></span>
 
         <!-- Status badge -->
         <ng-container *ngIf="getStatusClass() as statusClass">
@@ -29,23 +39,36 @@
         <div class="card-actions" *ngIf="!result.available && !result.approved && !result.requested">
             <div *ngIf="is4kEnabled && requestable && result.type === RequestType.movie;then show4K else regular"></div>
             <ng-template #show4K>
-                <button [matMenuTriggerFor]="menu" id="requestButton{{result.id}}{{result.type}}{{discoverType}}" mat-raised-button class="request-btn">
+                <button type="button" [matMenuTriggerFor]="menu" id="requestButton{{result.id}}{{result.type}}{{discoverType}}" class="request-btn" [class.is-loading]="loading">
                     <i *ngIf="!loading" class="fas fa-plus" aria-hidden="true"></i>
-                    <i *ngIf="loading" class="fas fa-spinner fa-pulse" aria-hidden="true"></i>
+                    <i *ngIf="loading" class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
                     <span>{{'Common.Request' | translate }}</span>
+                    <i class="fas fa-chevron-down request-btn-caret" aria-hidden="true"></i>
                 </button>
-                <mat-menu #menu="matMenu">
+                <mat-menu #menu="matMenu" class="discover-request-menu">
                     <button mat-menu-item class="request-menu-item" (click)="request($event, false)">{{'Common.Request' | translate }}</button>
                     <button mat-menu-item class="request-menu-item" (click)="request($event, true)">{{'Common.Request4K' | translate }}</button>
                 </mat-menu>
             </ng-template>
             <ng-template #regular>
-                <button id="requestButton{{result.id}}{{result.type}}{{discoverType}}" *ngIf="requestable" mat-raised-button class="request-btn" (click)="request($event, false)">
+                <button type="button" id="requestButton{{result.id}}{{result.type}}{{discoverType}}" *ngIf="requestable" class="request-btn" [class.is-loading]="loading" (click)="request($event, false)">
                     <i *ngIf="!loading" class="fas fa-plus" aria-hidden="true"></i>
-                    <i *ngIf="loading" class="fas fa-spinner fa-pulse" aria-hidden="true"></i>
+                    <i *ngIf="loading" class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
                     <span>{{'Common.Request' | translate }}</span>
                 </button>
             </ng-template>
         </div>
+    </div>
+
+    <!-- Caption under the poster (Editorial design only); the link above carries the accessible name. -->
+    <div class="card-caption" aria-hidden="true">
+        <span class="caption-title">{{ result.title }}</span>
+        <span class="caption-meta">
+            {{ 'Common.' + RequestType[result.type] | translate }}
+            @if (result.rating > 0) {
+                <span class="caption-sep">·</span>
+                <i class="fas fa-star" aria-hidden="true"></i> {{ result.rating | number: '1.1-1' }}
+            }
+        </span>
     </div>
 </div>

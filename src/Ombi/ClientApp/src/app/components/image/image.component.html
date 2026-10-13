@@ -1,1 +1,1 @@
-<img [src]="getImageSrc()" (error)="onError($event)" [class]="class" [id]="id" [style]="style" [alt]="alt || ''"/>
+<img [src]="getImageSrc()" (load)="onLoad($event)" (error)="onError($event)" [class]="class" [id]="id" [style]="style" [alt]="alt || ''" decoding="async"/>

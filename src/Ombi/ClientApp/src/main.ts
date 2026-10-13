@@ -11,7 +11,8 @@ import "./polyfills";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { AppComponent } from "./app/app.component";
 import { importProvidersFrom } from "@angular/core";
-import { RouterModule } from "@angular/router";
+import { provideRouter, withViewTransitions } from "@angular/router";
+import { skipSameRouteTransitions } from "./app/shared/view-transitions";
 import { withInterceptorsFromDi } from "@angular/common/http";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -122,8 +123,12 @@ if (environment.production) {
 bootstrapApplication(AppComponent, {
     providers: [
         // Core Angular providers
+        // Router with cross-fading page transitions (where the browser supports them)
+        provideRouter(routes, withViewTransitions({
+            skipInitialTransition: true,
+            onViewTransitionCreated: skipSameRouteTransitions,
+        })),
         importProvidersFrom(
-            RouterModule.forRoot(routes),
             BrowserAnimationsModule,
             FormsModule,
             ReactiveFormsModule,

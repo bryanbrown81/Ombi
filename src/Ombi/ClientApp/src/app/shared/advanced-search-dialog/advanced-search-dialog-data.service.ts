@@ -12,10 +12,13 @@ export class AdvancedSearchDialogDataService {
     private _data: any;
     private _options: any;
     private _type: RequestType;
+    private _label: string | null = null;
 
-    setData(data: any, type: RequestType) {
+    /** @param label Optional human-readable title for the results, e.g. the genre name. */
+    setData(data: any, type: RequestType, label?: string) {
         this._data = data;
         this._type = type;
+        this._label = label ?? null;
         this.onDataChange.emit(this._data);
     }
 
@@ -44,5 +47,9 @@ export class AdvancedSearchDialogDataService {
 
     getType(): RequestType {
         return this._type;
+    }
+
+    getLabel(): string | null {
+        return this._label;
     }
 }
