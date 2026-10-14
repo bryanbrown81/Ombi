@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -472,6 +473,18 @@ namespace Ombi.Schedule.Jobs.Plex
 
                     if (!providerIds.Any())
                     {
+                        // Plex can match a new title to its own agent (plex://movie/...) before the local item
+                        // has any external ids attached; they only show up after a metadata refresh or "Fix Match".
+                        // Plex's online metadata provider usually has them already, so ask it directly.
+                        providerIds = await GetProviderIdsFromPlexProvider(servers, guids.Prepend(movie.guid));
+                        if (providerIds.Any())
+                        {
+                            Logger.LogInformation($"Movie {movie.title} has no External Ids in Plex yet, resolved them from Plex's metadata provider");
+                        }
+                    }
+
+                    if (!providerIds.Any())
+                    {
                         Logger.LogWarning($"Movie {movie.title} has no External Ids in Plex (ImdbId, TheMovieDbId). Skipping.");
                         continue;
                     }
@@ -542,6 +555,30 @@ namespace Ombi.Schedule.Jobs.Plex
 
                     contentToAdd.Clear();
                 }
+            }
+        }
+
+        private async Task<ProviderId> GetProviderIdsFromPlexProvider(PlexServers servers, IEnumerable<string> guids)
+        {
+            // plex://movie/5e1632df2d4d84003e48e54e
+            var plexGuid = guids.FirstOrDefault(x => x != null && x.StartsWith("plex://", StringComparison.InvariantCultureIgnoreCase));
+            var guidSplit = plexGuid?.Split(new[] { '/', '?' }, StringSplitOptions.RemoveEmptyEntries);
+            if (guidSplit == null || guidSplit.Length < 3)
+            {
+                return new ProviderId();
+            }
+
+            try
+            {
+                var metaData = await PlexApi.GetWatchlistMetadata(guidSplit[2], servers.PlexAuthToken, CancellationToken.None);
+                var meta = metaData?.MediaContainer?.Metadata?.FirstOrDefault();
+                var providerGuids = meta?.Guid?.Select(x => x.Id).ToArray() ?? Array.Empty<string>();
+                return PlexHelper.GetProviderIdsFromMetadata(providerGuids);
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning(LoggingEvents.PlexContentCacher, e, "Could not get External Ids for {0} from Plex's metadata provider", plexGuid);
+                return new ProviderId();
             }
         }
 

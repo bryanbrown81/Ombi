@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Moq.AutoMock;
@@ -86,6 +87,103 @@ namespace Ombi.Schedule.Tests
             var first = contentToAdd.First();
             Assert.That(first.ImdbId, Is.EqualTo("tt0322259"));
             _mocker.Verify<IPlexApi>(x => x.GetMetadata(It.IsAny<string>(), It.IsAny<string>(),It.IsAny<string>()), Times.Never);
+            _mocker.Verify<IPlexApi>(x => x.GetWatchlistMetadata(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Test]
+        public async Task SyncsMovieWithIdsFromPlexProvider_WhenPlexItemOnlyHasPlexGuid()
+        {
+            var content = new Mediacontainer
+            {
+                Metadata = new[]
+                {
+                    new Metadata
+                    {
+                        ratingKey = "201224",
+                        title = "Buddy",
+                        year = 2026,
+                        type = "movie",
+                    },
+                }
+            };
+            var contentToAdd = new HashSet<PlexServerContent>();
+            var contentProcessed = new Dictionary<int, string>();
+            SetupLocalMetadataWithOnlyPlexGuid("201224", "plex://movie/66f841b96c174455758b8fda");
+            _mocker.Setup<IPlexApi, Task<PlexWatchlistMetadataContainer>>(x =>
+                    x.GetWatchlistMetadata("66f841b96c174455758b8fda", It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new PlexWatchlistMetadataContainer
+                {
+                    MediaContainer = new PlexWatchlistMetadata
+                    {
+                        Metadata = new[]
+                        {
+                            new WatchlistMetadata
+                            {
+                                guid = "plex://movie/66f841b96c174455758b8fda",
+                                Guid = new List<PlexGuids>
+                                {
+                                    new PlexGuids { Id = "imdb://tt37281055" },
+                                    new PlexGuids { Id = "tmdb://1514026" },
+                                }
+                            }
+                        }
+                    }
+                }));
+
+            await _subject.MovieLoop(new PlexServers { Ip = "http://test.com/", Port = 80, PlexAuthToken = "token" }, content, contentToAdd, contentProcessed);
+
+            var first = contentToAdd.Single();
+            Assert.That(first.ImdbId, Is.EqualTo("tt37281055"));
+            Assert.That(first.TheMovieDbId, Is.EqualTo("1514026"));
+            _mocker.Verify<IPlexApi>(x => x.GetWatchlistMetadata("66f841b96c174455758b8fda", "token", It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task SkipsMovie_WhenNeitherPlexNorPlexProviderHaveIds()
+        {
+            var content = new Mediacontainer
+            {
+                Metadata = new[]
+                {
+                    new Metadata
+                    {
+                        ratingKey = "201224",
+                        title = "Buddy",
+                        year = 2026,
+                        type = "movie",
+                    },
+                }
+            };
+            var contentToAdd = new HashSet<PlexServerContent>();
+            var contentProcessed = new Dictionary<int, string>();
+            SetupLocalMetadataWithOnlyPlexGuid("201224", "plex://movie/66f841b96c174455758b8fda");
+            _mocker.Setup<IPlexApi, Task<PlexWatchlistMetadataContainer>>(x =>
+                    x.GetWatchlistMetadata(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<PlexWatchlistMetadataContainer>(null));
+
+            await _subject.MovieLoop(new PlexServers { Ip = "http://test.com/", Port = 80 }, content, contentToAdd, contentProcessed);
+
+            Assert.That(contentToAdd, Is.Empty);
+        }
+
+        private void SetupLocalMetadataWithOnlyPlexGuid(string ratingKey, string plexGuid)
+        {
+            _mocker.Setup<IPlexApi, Task<PlexMetadata>>(x => x.GetMetadata(It.IsAny<string>(), It.IsAny<string>(), ratingKey))
+                .Returns(Task.FromResult(new PlexMetadata
+                {
+                    MediaContainer = new Mediacontainer
+                    {
+                        Metadata = new[]
+                        {
+                            new Metadata
+                            {
+                                ratingKey = ratingKey,
+                                guid = plexGuid,
+                                type = "movie",
+                            }
+                        }
+                    }
+                }));
         }
 
         [Test]
