@@ -14,6 +14,7 @@
   </div>
 
 <!-- User area -->
+<ng-container *ngIf="canRequestOnBehalf">
 <h3><i class="fas fa-user-friends"></i> {{'MediaDetails.RequestOnBehalf' | translate }}</h3>
 <mat-form-field class="example-full-width" appearance="outline" floatLabel=auto>
   <mat-label>{{ 'MediaDetails.PleaseSelectUser' | translate}}</mat-label>
@@ -28,6 +29,7 @@
     </mat-option>
   </mat-autocomplete>
 </mat-form-field>
+</ng-container>
 <!-- End User area -->
 
 

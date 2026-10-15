@@ -80,10 +80,11 @@ namespace Ombi.Core.Engine
             var userDetails = await GetUser();
             var canRequestOnBehalf = model.RequestOnBehalf.HasValue();
 
-            var isAdmin = Username.Equals("API", StringComparison.CurrentCultureIgnoreCase)
-                || await UserManager.IsInRoleAsync(userDetails, OmbiRoles.PowerUser)
-                || await UserManager.IsInRoleAsync(userDetails, OmbiRoles.Admin);
-            if (canRequestOnBehalf && !isAdmin)
+            var isApi = Username.Equals("API", StringComparison.CurrentCultureIgnoreCase);
+            var isFullAdmin = isApi || await UserManager.IsInRoleAsync(userDetails, OmbiRoles.Admin);
+            var isAdmin = isFullAdmin || await UserManager.IsInRoleAsync(userDetails, OmbiRoles.PowerUser);
+            // Only Admins (or the API) may request on behalf of other users
+            if (canRequestOnBehalf && !isFullAdmin)
             {
                 return new RequestEngineResult
                 {

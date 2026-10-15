@@ -65,7 +65,8 @@ namespace Ombi.Core.Engine
 
             if (tv.RequestOnBehalf.HasValue())
             {
-                canRequestOnBehalf = await UserManager.IsInRoleAsync(user, OmbiRoles.PowerUser) || await UserManager.IsInRoleAsync(user, OmbiRoles.Admin);
+                // Only Admins (or the API) may request on behalf of other users
+                canRequestOnBehalf = Username.Equals("API", StringComparison.CurrentCultureIgnoreCase) || await UserManager.IsInRoleAsync(user, OmbiRoles.Admin);
 
                 if (!canRequestOnBehalf)
                 {
@@ -164,8 +165,10 @@ namespace Ombi.Core.Engine
             var user = await GetUser();
             var canRequestOnBehalf = tv.RequestOnBehalf.HasValue();
 
-            var isAdmin = Username.Equals("API", StringComparison.CurrentCultureIgnoreCase) || await UserManager.IsInRoleAsync(user, OmbiRoles.PowerUser) || await UserManager.IsInRoleAsync(user, OmbiRoles.Admin);
-            if (tv.RequestOnBehalf.HasValue() && !isAdmin)
+            var isFullAdmin = Username.Equals("API", StringComparison.CurrentCultureIgnoreCase) || await UserManager.IsInRoleAsync(user, OmbiRoles.Admin);
+            var isAdmin = isFullAdmin || await UserManager.IsInRoleAsync(user, OmbiRoles.PowerUser);
+            // Only Admins (or the API) may request on behalf of other users
+            if (tv.RequestOnBehalf.HasValue() && !isFullAdmin)
             {
                 return new RequestEngineResult
                 {

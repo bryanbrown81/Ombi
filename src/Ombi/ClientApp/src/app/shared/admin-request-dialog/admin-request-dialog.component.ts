@@ -22,6 +22,7 @@ import {
 	RequestType,
 } from '../../interfaces';
 import { IdentityService, RadarrService, SonarrService } from '../../services';
+import { AuthService } from '../../auth/auth.service';
 
 export interface IAdminRequestDialogData {
 	type: RequestType;
@@ -56,6 +57,7 @@ export class AdminRequestDialogComponent implements OnInit {
 		private fb: UntypedFormBuilder,
 		private sonarrFacade: SonarrFacade,
 		private radarrFacade: RadarrFacade,
+		private auth: AuthService,
 	) {}
 
 	public form: UntypedFormGroup;
@@ -64,6 +66,8 @@ export class AdminRequestDialogComponent implements OnInit {
 	public options: IUserDropdown[];
 	public filteredOptions: Observable<IUserDropdown[]>;
 	public userId: string;
+	// Only Admins may request on behalf of other users
+	public canRequestOnBehalf = false;
 
 	public radarrEnabled: boolean;
 	public radarr4kEnabled: boolean;
@@ -85,12 +89,15 @@ export class AdminRequestDialogComponent implements OnInit {
 			radarrFolderId: [null],
 		});
 
-		this.options = await firstValueFrom(this.identityService.getUsersDropdown());
+		this.canRequestOnBehalf = this.auth.hasRole('admin');
+		if (this.canRequestOnBehalf) {
+			this.options = await firstValueFrom(this.identityService.getUsersDropdown());
 
-		this.filteredOptions = this.form.controls['username'].valueChanges.pipe(
-			startWith(''),
-			map((value) => this._filter(value)),
-		);
+			this.filteredOptions = this.form.controls['username'].valueChanges.pipe(
+				startWith(''),
+				map((value) => this._filter(value)),
+			);
+		}
 
 		if (this.data.type === RequestType.tvShow) {
 			this.sonarrEnabled = this.sonarrFacade.isEnabled();
@@ -152,6 +159,9 @@ export class AdminRequestDialogComponent implements OnInit {
 
 	public async submitRequest() {
 		const model = this.form.value;
+		if (!this.canRequestOnBehalf) {
+			model.username = null;
+		}
 		model.radarrQualityOverrideTitle = this.radarrProfiles?.filter((x) => x.id == model.radarrPathId)[0]?.name;
 		model.radarrRootFolderTitle = this.radarrRootFolders?.filter((x) => x.id == model.radarrFolderId)[0]?.path;
 		model.sonarrRootFolderTitle = this.sonarrRootFolders?.filter((x) => x.id == model.sonarrFolderId)[0]?.path;
